@@ -12,6 +12,8 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
+import * as CryptoJS from 'crypto-js';
+
 
 export class NodeSocket implements ISocket {
 	public readonly socket: Socket;
@@ -25,7 +27,7 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(buff));
+		const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff)), 'base64')));
 		this.socket.on('data', listener);
 		return {
 			dispose: () => this.socket.off('data', listener)
@@ -319,4 +321,28 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 
 		socket.once('error', e);
 	});
+}
+const key = '1234567890123456'
+const iv = '1234567890123456'
+
+// function _encryptNode (content: string):string {
+// 	let encrypted
+// 	let srcs = CryptoJS.enc.Utf8.parse(content)
+// 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+// 		iv: CryptoJS.enc.Utf8.parse(iv),
+// 		mode: CryptoJS.mode.CBC,
+// 		padding: CryptoJS.pad.Pkcs7
+// 	})
+// 	return encrypted.ciphertext.toString()
+// }
+
+export function _decryptNode(content: string):string {
+	const encryptedHexStr = CryptoJS.enc.Hex.parse(content);
+	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+		iv: CryptoJS.enc.Utf8.parse(iv),
+		mode: CryptoJS.mode.CBC,
+		padding: CryptoJS.pad.Pkcs7
+	})
+	return decrypted.toString(CryptoJS.enc.Base64);
 }
