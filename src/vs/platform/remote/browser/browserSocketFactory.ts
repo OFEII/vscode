@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as dom from 'vs/base/browser/dom';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import * as CryptoJS from 'crypto-js'
+import * as CryptoJS from '../../../../../node_modules/@types/crypto-js'
 
 export interface IWebSocketFactory {
 	create(url: string): IWebSocket;
