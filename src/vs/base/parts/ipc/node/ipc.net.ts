@@ -12,7 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
-import * as CryptoJS from '../../../../../../node_modules/@types/crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 
 export class NodeSocket implements ISocket {
@@ -27,7 +27,8 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff)), 'base64')));
+		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(buff));
+		// const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff)), 'base64')));
 		this.socket.on('data', listener);
 		return {
 			dispose: () => this.socket.off('data', listener)
