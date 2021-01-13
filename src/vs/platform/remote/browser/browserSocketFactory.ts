@@ -79,6 +79,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		this._socketMessageListener = (ev: MessageEvent) => {
 			enqueue(<Blob>ev.data);
 		};
+		//FIXME:客户端接收的加密
 		this._socket.addEventListener('message', this._socketMessageListener);
 
 		this.onOpen = Event.fromDOMEventEmitter(this._socket, 'open');
