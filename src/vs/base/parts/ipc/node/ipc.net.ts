@@ -12,7 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
-import * as CryptoJS from 'crypto-js'
+// import * as CryptoJS from 'crypto-js'
 
 
 export class NodeSocket implements ISocket {
@@ -338,13 +338,13 @@ const iv = '1234567890123456'
 // 	return encrypted.ciphertext.toString()
 // }
 
-export function _decryptNode(content: string):string {
-	const encryptedHexStr = CryptoJS.enc.Hex.parse(content);
-	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-		iv: CryptoJS.enc.Utf8.parse(iv),
-		mode: CryptoJS.mode.CBC,
-		padding: CryptoJS.pad.Pkcs7
-	})
-	return decrypted.toString(CryptoJS.enc.Base64);
-}
+// export function _decryptNode(content: string):string {
+// 	const encryptedHexStr = CryptoJS.enc.Hex.parse(content);
+// 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+// 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+// 		iv: CryptoJS.enc.Utf8.parse(iv),
+// 		mode: CryptoJS.mode.CBC,
+// 		padding: CryptoJS.pad.Pkcs7
+// 	})
+// 	return decrypted.toString(CryptoJS.enc.Base64);
+// }

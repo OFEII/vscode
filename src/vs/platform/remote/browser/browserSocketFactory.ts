@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as dom from 'vs/base/browser/dom';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import * as CryptoJS from 'crypto-js'
+// import * as CryptoJS from 'crypto-js'
 
 export interface IWebSocketFactory {
 	create(url: string): IWebSocket;
@@ -227,16 +227,16 @@ export class BrowserSocketFactory implements ISocketFactory {
 const key = '1234567890123456'
 const iv = '1234567890123456'
 
-export function encryption (content: string): string{
-	let encrypted;
-	let srcs = CryptoJS.enc.Utf8.parse(content);
-	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-		iv: CryptoJS.enc.Utf8.parse(iv),
-		mode: CryptoJS.mode.CBC,
-		padding: CryptoJS.pad.Pkcs7
-	})
-	return encrypted.ciphertext.toString();
-}
+// export function encryption (content: string): string{
+// 	let encrypted;
+// 	let srcs = CryptoJS.enc.Utf8.parse(content);
+// 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+// 		iv: CryptoJS.enc.Utf8.parse(iv),
+// 		mode: CryptoJS.mode.CBC,
+// 		padding: CryptoJS.pad.Pkcs7
+// 	})
+// 	return encrypted.ciphertext.toString();
+// }
 
 // function decryption(content: string) : string {
 // 	const encryptedHexStr = CryptoJS.enc.Hex.parse(content)
