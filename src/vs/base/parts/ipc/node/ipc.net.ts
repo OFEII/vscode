@@ -116,7 +116,6 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 		return this.socket.onEnd(listener);
 	}
 
-	// FIXME:NODE服务端发送的加密
 	public write(buffer: VSBuffer): void {
 		let headerLen = Constants.MinHeaderByteSize;
 		if (buffer.byteLength < 126) {
@@ -337,7 +336,7 @@ const iv = '1234567890123456'
 // 	return encrypted.ciphertext.toString()
 // }
 
-export function _decryptNode(content: string):string {
+function _decryptNode(content: string):string {
 	const encryptedHexStr = CryptoJS.enc.Hex.parse(content);
 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {

@@ -79,7 +79,6 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		this._socketMessageListener = (ev: MessageEvent) => {
 			enqueue(<Blob>ev.data);
 		};
-		//FIXME:客户端接收的加密
 		this._socket.addEventListener('message', this._socketMessageListener);
 
 		this.onOpen = Event.fromDOMEventEmitter(this._socket, 'open');
@@ -226,7 +225,7 @@ export class BrowserSocketFactory implements ISocketFactory {
 const key = '1234567890123456'
 const iv = '1234567890123456'
 
-export function encryption (content: string): string{
+function encryption (content: string): string{
 	let encrypted;
 	let srcs = CryptoJS.enc.Utf8.parse(content);
 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
