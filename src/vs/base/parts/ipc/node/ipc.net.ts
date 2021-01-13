@@ -324,27 +324,3 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 		socket.once('error', e);
 	});
 }
-const key = '1234567890123456'
-const iv = '1234567890123456'
-
-// function _encryptNode (content: string):string {
-// 	let encrypted
-// 	let srcs = CryptoJS.enc.Utf8.parse(content)
-// 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	return encrypted.ciphertext.toString()
-// }
-
-// export function _decryptNode(content: string):string {
-// 	const encryptedHexStr = CryptoJS.enc.Hex.parse(content);
-// 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-// 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	return decrypted.toString(CryptoJS.enc.Base64);
-// }

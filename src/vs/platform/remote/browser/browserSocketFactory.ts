@@ -223,29 +223,3 @@ export class BrowserSocketFactory implements ISocketFactory {
 		});
 	}
 }
-
-const key = '1234567890123456'
-const iv = '1234567890123456'
-
-// export function encryption (content: string): string{
-// 	let encrypted;
-// 	let srcs = CryptoJS.enc.Utf8.parse(content);
-// 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	return encrypted.ciphertext.toString();
-// }
-
-// function decryption(content: string) : string {
-// 	const encryptedHexStr = CryptoJS.enc.Hex.parse(content)
-// 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr)
-// 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	return decrypted.toString(CryptoJS.enc.Utf8)
-// }
-
