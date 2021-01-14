@@ -12,7 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
-
+import CryptoJS = require('crypto-js');
 
 export class NodeSocket implements ISocket {
 	public readonly socket: Socket;
@@ -321,7 +321,6 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 		socket.once('error', e);
 	});
 }
-var CryptoJS = require('crypto-js');
 const key = '1234567890123456'
 const iv = '1234567890123456'
 
