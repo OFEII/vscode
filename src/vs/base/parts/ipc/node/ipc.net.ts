@@ -26,7 +26,9 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff)), 'base64')));
+		// const listener = (buff: Buffer) => _listener(VSBuffer.wrap(buff));
+		const listener = (buff: Buffer) => _listener(VSBuffer.fromString( _decryptNode(buff.toString('base64'))));
+		// const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff)), 'base64')));
 		this.socket.on('data', listener);
 		return {
 			dispose: () => this.socket.off('data', listener)
