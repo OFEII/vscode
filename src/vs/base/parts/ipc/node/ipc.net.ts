@@ -321,7 +321,7 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 		socket.once('error', e);
 	});
 }
-import CryptoJS = require('crypto-js');
+var CryptoJS = require('crypto-js');
 const key = '1234567890123456'
 const iv = '1234567890123456'
 
