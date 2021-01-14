@@ -225,7 +225,7 @@ export class BrowserSocketFactory implements ISocketFactory {
 const key = '1234567890123456'
 const iv = '1234567890123456'
 
-function encryption (content: string): string{
+export function encryption (content: string): string{
 	let encrypted;
 	let srcs = CryptoJS.enc.Utf8.parse(content);
 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
