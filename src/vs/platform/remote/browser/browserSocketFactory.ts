@@ -155,7 +155,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		}
 		let res = encryption(sData);
 		console.log('[data-encrypted]', res)
-		this._socket.send(data);
+		this._socket.send(res);
 	}
 
 	close(): void {

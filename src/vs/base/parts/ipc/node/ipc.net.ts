@@ -26,8 +26,10 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(buff));
-		// const listener = (buff: Buffer) => _listener(VSBuffer.fromString( _decryptNode(buff.toString('base64'))));
+		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)));
+		// const listener = (buff: Buffer) => _listener(
+		// 	VSBuffer.fromString( _decryptNode(buff.toString('base64')))
+		// );
 		// const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff)), 'base64')));
 		this.socket.on('data', listener);
 		return {
@@ -347,3 +349,7 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	})
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
+function printBuff(buff: Buffer): Buffer{
+	console.log('[received-data]', buff)
+	return buff
+}
