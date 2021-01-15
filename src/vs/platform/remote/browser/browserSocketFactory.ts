@@ -148,13 +148,19 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			return;
 		}
 		// let sData:string = ''
-		// if (new Uint8Array(<ArrayBuffer>data)) {
-		// 	sData = window.btoa(String.fromCharCode(...new Uint8Array(<ArrayBuffer>data)));
-		// } else {
-		// 	sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
-		// }
+		let data1 = ''
+		let data2
+		if (new Uint8Array(<ArrayBuffer>data)) {
+			data1 = ab2str(<ArrayBuffer>data)
+			data2 = str2ab(data1)
+			// sData = window.btoa(String.fromCharCode(...new Uint8Array(<ArrayBuffer>data)));
+		} else {
+			// sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
+		}
 		// let res = encryption(sData);
-		console.log('[data-raw]', data)
+		console.log('[data-raw-0]', data)
+		console.log('[data-raw-1]', data1)
+		console.log('[data-raw-2]', data2)
 		this._socket.send(data);
 	}
 
@@ -248,3 +254,16 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return decrypted.toString(CryptoJS.enc.Utf8)
 // }
 
+function ab2str(buf: ArrayBuffer): string{
+	return String.fromCharCode(...new Uint8Array(buf))
+}
+
+	// 字符串转为ArrayBuffer对象，参数为字符串
+function str2ab(str: string): ArrayBuffer {
+	let buf = new ArrayBuffer(str.length * 2); // 每个字符占用2个字节
+	let bufView = new Uint8Array(buf);
+	for (let i = 0, strLen = str.length; i < strLen; i++) {
+		bufView[i] = str.charCodeAt(i);
+	}
+	return buf;
+}
