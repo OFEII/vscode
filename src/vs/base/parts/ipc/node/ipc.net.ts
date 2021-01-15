@@ -350,6 +350,6 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
 function printBuff(buff: Buffer): Buffer{
-	console.log('[received-data]', buff)
+	console.log('[node-received-data-buffer-base64]:', buff.toString('base64'))
 	return buff
 }
