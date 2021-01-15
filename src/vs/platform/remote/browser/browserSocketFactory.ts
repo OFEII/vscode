@@ -154,7 +154,8 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
 		}
 		let res = encryption(sData);
-		this._socket.send(res);
+		console.log('[data-encrypted]', res)
+		this._socket.send(data);
 	}
 
 	close(): void {
