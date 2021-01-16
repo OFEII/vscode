@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as dom from 'vs/base/browser/dom';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-// import * as CryptoJS from 'crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 export interface IWebSocketFactory {
 	create(url: string): IWebSocket;
@@ -147,21 +147,15 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			// Refuse to write data to closed WebSocket...
 			return;
 		}
-		// let sData:string = ''
-		let data1 = ''
-		let data2
+		let sData:string = ''
 		if (new Uint8Array(<ArrayBuffer>data)) {
-			data1 = ab2str(<ArrayBuffer>data)
-			data2 = str2ab(data1)
-			// sData = window.btoa(String.fromCharCode(...new Uint8Array(<ArrayBuffer>data)));
+			sData = window.btoa(String.fromCharCode(...new Uint8Array(<ArrayBuffer>data)));
 		} else {
-			// sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
+			sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
 		}
-		// let res = encryption(sData);
-		console.log('[data-raw-0]', data)
-		console.log('[data-raw-1]', data1)
-		console.log('[data-raw-2]', data2)
-		this._socket.send(data);
+		let res = encryption(sData);
+		console.log('[client-cryptoed-data]', res)
+		this._socket.send(res);
 	}
 
 	close(): void {
@@ -229,41 +223,16 @@ export class BrowserSocketFactory implements ISocketFactory {
 	}
 }
 
-// const key = '1234567890123456'
-// const iv = '1234567890123456'
+const key = '1234567890123456'
+const iv = '1234567890123456'
 
-// function encryption (content: string): string{
-// 	let encrypted;
-// 	let srcs = CryptoJS.enc.Utf8.parse(content);
-// 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	return encrypted.ciphertext.toString();
-// }
-
-// function decryption(content: string) : string {
-// 	const encryptedHexStr = CryptoJS.enc.Hex.parse(content)
-// 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr)
-// 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	return decrypted.toString(CryptoJS.enc.Utf8)
-// }
-
-function ab2str(buf: ArrayBuffer): string{
-	return String.fromCharCode(...new Uint8Array(buf))
-}
-
-	// 字符串转为ArrayBuffer对象，参数为字符串
-function str2ab(str: string): ArrayBuffer {
-	let buf = new ArrayBuffer(str.length * 2); // 每个字符占用2个字节
-	let bufView = new Uint8Array(buf);
-	for (let i = 0, strLen = str.length; i < strLen; i++) {
-		bufView[i] = str.charCodeAt(i);
-	}
-	return buf;
+function encryption (content: string): string{
+	let encrypted;
+	let srcs = CryptoJS.enc.Utf8.parse(content);
+	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+		iv: CryptoJS.enc.Utf8.parse(iv),
+		mode: CryptoJS.mode.CBC,
+		padding: CryptoJS.pad.Pkcs7
+	})
+	return encrypted.ciphertext.toString();
 }
