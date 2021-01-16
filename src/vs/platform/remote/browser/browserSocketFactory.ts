@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as dom from 'vs/base/browser/dom';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-import * as CryptoJS from 'crypto-js'
+// import * as CryptoJS from 'crypto-js'
 
 export interface IWebSocketFactory {
 	create(url: string): IWebSocket;
@@ -153,8 +153,8 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		} else {
 			sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
 		}
-		let res = encryption(sData);
-		console.log('[client-cryptoed-data]', res)
+		let res = str2ab(sData);
+		console.log('[twice-changed-data]', res)
 		this._socket.send(res);
 	}
 
@@ -223,16 +223,25 @@ export class BrowserSocketFactory implements ISocketFactory {
 	}
 }
 
-const key = '1234567890123456'
-const iv = '1234567890123456'
+// const key = '1234567890123456'
+// const iv = '1234567890123456'
 
-function encryption (content: string): string{
-	let encrypted;
-	let srcs = CryptoJS.enc.Utf8.parse(content);
-	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-		iv: CryptoJS.enc.Utf8.parse(iv),
-		mode: CryptoJS.mode.CBC,
-		padding: CryptoJS.pad.Pkcs7
-	})
-	return encrypted.ciphertext.toString();
+// function encryption (content: string): string{
+// 	let encrypted;
+// 	let srcs = CryptoJS.enc.Utf8.parse(content);
+// 	encrypted = CryptoJS.AES.encrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+// 		iv: CryptoJS.enc.Utf8.parse(iv),
+// 		mode: CryptoJS.mode.CBC,
+// 		padding: CryptoJS.pad.Pkcs7
+// 	})
+// 	return encrypted.ciphertext.toString();
+// }
+
+function str2ab(str: string): ArrayBuffer {
+	let buf = new ArrayBuffer(str.length * 2);
+	let bufView = new Uint8Array(buf);
+	for (let i = 0, strLen = str.length; i < strLen; i++) {
+		bufView[i] = str.charCodeAt(i);
+	}
+	return buf;
 }

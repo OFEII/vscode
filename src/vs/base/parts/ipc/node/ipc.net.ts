@@ -12,7 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
-import * as CryptoJS from 'crypto-js'
+// import * as CryptoJS from 'crypto-js'
 
 export class NodeSocket implements ISocket {
 	public readonly socket: Socket;
@@ -26,7 +26,8 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff.toString())), 'base64')));
+		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)));
+		// const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff.toString())), 'base64')));
 		this.socket.on('data', listener);
 		return {
 			dispose: () => this.socket.off('data', listener)
@@ -321,18 +322,22 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 		socket.once('error', e);
 	});
 }
-const key = '1234567890123456'
-const iv = '1234567890123456'
+// const key = '1234567890123456'
+// const iv = '1234567890123456'
 
-function _decryptNode(data: string):string {
-	console.log('[node-data-string]', data)
-	const encryptedHexStr = CryptoJS.enc.Hex.parse(data);
-	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-		iv: CryptoJS.enc.Utf8.parse(iv),
-		mode: CryptoJS.mode.CBC,
-		padding: CryptoJS.pad.Pkcs7
-	})
-	console.log('[node-data-decrypto]', decrypted.toString(CryptoJS.enc.Base64))
-	return decrypted.toString(CryptoJS.enc.Base64);
+// function _decryptNode(data: string):string {
+// 	console.log('[node-data-string]', data)
+// 	const encryptedHexStr = CryptoJS.enc.Hex.parse(data);
+// 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+// 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
+// 		iv: CryptoJS.enc.Utf8.parse(iv),
+// 		mode: CryptoJS.mode.CBC,
+// 		padding: CryptoJS.pad.Pkcs7
+// 	})
+// 	console.log('[node-data-decrypto]', decrypted.toString(CryptoJS.enc.Base64))
+// 	return decrypted.toString(CryptoJS.enc.Base64);
+// }
+function printBuff(buff: Buffer): Buffer{
+	console.log('[node-received-data-buffer-base64]:', buff.toString('utf8'))
+	return buff
 }
