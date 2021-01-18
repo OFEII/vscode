@@ -339,10 +339,8 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // }
 function printBuff(buff: Buffer): Buffer{
 	console.log('[node-buff]:', buff)
-	console.log('utf8', buff.toString('gbk'));
 	console.log('hex', buff.toString('hex'));
 	console.log('base64', buff.toString('base64'));
 	console.log('utf8', buff.toString('utf8'));
-	console.log('utf8', buff.toString('utf16'));
 	return buff
 }
