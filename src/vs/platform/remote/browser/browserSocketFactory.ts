@@ -147,14 +147,16 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			// Refuse to write data to closed WebSocket...
 			return;
 		}
-		console.log('[init-data]', data)
+		let res: ArrayBuffer | ArrayBufferView
 		let sData:string = ''
 		if (<ArrayBuffer>data) {
-			sData = window.btoa(String.fromCharCode(...new Uint8Array(<ArrayBuffer>data)));
+			sData = String.fromCharCode(...new Uint8Array(<ArrayBuffer>data));
+			res = str2ab(sData);
 		} else {
-			sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
+			sData = String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer));
+			res = str2uit8(sData)
 		}
-		let res = str2ab(sData);
+		console.log('[init-data]', data)
 		console.log('[twice-changed-data]', res)
 		this._socket.send(res);
 	}
@@ -245,4 +247,13 @@ function str2ab(str: string): ArrayBuffer {
 		bufView[i] = str.charCodeAt(i);
 	}
 	return buf;
+}
+
+function str2uit8(str: string): ArrayBufferView {
+	let arr = []
+	for (let i = 0, j = str.length; i < j; ++i) {
+		arr.push(str.charCodeAt(i))
+	}
+	let tmpUnit8Array = new Uint8Array(arr)
+	return tmpUnit8Array
 }
