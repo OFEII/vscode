@@ -150,6 +150,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		let res: ArrayBuffer | ArrayBufferView
 		let sData:string = ''
 		if (<ArrayBuffer>data) {
+			console.log('first', data)
 			this._socket.send(data);
 		} else {
 			sData = unit8ToStr(<ArrayBufferView>data)
