@@ -12,6 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
+import iconv = require('iconv-lite');
 // import * as CryptoJS from 'crypto-js'
 
 export class NodeSocket implements ISocket {
@@ -338,6 +339,8 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
 function printBuff(buff: Buffer): Buffer{
-	console.log('utf8', buff.toString('utf16le'));
+	let str = iconv.decode(buff, 'gbk')
+	console.log('gbk2', str);
+	console.log('utf16', buff.toString('utf16le'));
 	return buff
 }
