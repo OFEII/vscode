@@ -149,7 +149,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		}
 		let res: ArrayBuffer | ArrayBufferView
 		let sData:string = ''
-		if (<ArrayBuffer>data) {
+		if (data instanceof ArrayBuffer) {
 			console.log('first', data)
 			this._socket.send(data);
 		} else {
