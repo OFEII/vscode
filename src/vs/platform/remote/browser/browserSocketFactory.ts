@@ -153,7 +153,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			console.log('first', data)
 			this._socket.send(data);
 		} else {
-			sData = unit8ToStr(<ArrayBufferView>data)
+			sData = '[test]' + unit8ToStr(<ArrayBufferView>data)
 			res = str2uit8(sData)
 			console.log('[res-data]', data)
 			console.log('[res-sData]', sData);

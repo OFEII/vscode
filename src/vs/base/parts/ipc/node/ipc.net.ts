@@ -338,9 +338,6 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
 function printBuff(buff: Buffer): Buffer{
-	console.log('[node-buff]:', buff)
-	console.log('hex', buff.toString('hex'));
-	console.log('base64', buff.toString('base64'));
-	console.log('utf8', buff.toString('utf8'));
+	console.log('utf8', buff.toString('utf16le'));
 	return buff
 }
