@@ -154,6 +154,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
 		}
 		let res = str2ab(sData);
+		console.log('[init-data]', data)
 		console.log('[twice-changed-data]', res)
 		this._socket.send(res);
 	}

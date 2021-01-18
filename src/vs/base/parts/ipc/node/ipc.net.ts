@@ -338,6 +338,6 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
 function printBuff(buff: Buffer): Buffer{
-	console.log('[node-received-data-buffer-base64]:', buff.toString('utf8'))
+	console.log('[node-buff]:', buff)
 	return buff
 }
