@@ -152,13 +152,16 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		if (<ArrayBuffer>data) {
 			sData = String.fromCharCode(...new Uint8Array(<ArrayBuffer>data));
 			res = str2ab(sData);
+			console.log('[init-data-1]', data)
+			console.log('[twice-changed-data-1]', res)
+			this._socket.send(res);
 		} else {
-			sData = String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer));
-			res = str2uit8(sData)
+			// sData = String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer));
+			// res = str2uit8(sData)
+			console.log('[init-data-2]', data)
+			console.log('[twice-changed-data-2]', data)
+			this._socket.send(data);
 		}
-		console.log('[init-data]', data)
-		console.log('[twice-changed-data]', res)
-		this._socket.send(res);
 	}
 
 	close(): void {
@@ -249,11 +252,11 @@ function str2ab(str: string): ArrayBuffer {
 	return buf;
 }
 
-function str2uit8(str: string): ArrayBufferView {
-	let arr = []
-	for (let i = 0, j = str.length; i < j; ++i) {
-		arr.push(str.charCodeAt(i))
-	}
-	let tmpUnit8Array = new Uint8Array(arr)
-	return tmpUnit8Array
-}
+// function str2uit8(str: string): ArrayBufferView {
+// 	let arr = []
+// 	for (let i = 0, j = str.length; i < j; ++i) {
+// 		arr.push(str.charCodeAt(i))
+// 	}
+// 	let tmpUnit8Array = new Uint8Array(arr)
+// 	return tmpUnit8Array
+// }
