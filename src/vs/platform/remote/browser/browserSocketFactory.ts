@@ -147,21 +147,22 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			// Refuse to write data to closed WebSocket...
 			return;
 		}
-		let res: ArrayBuffer | ArrayBufferView
-		let sData:string = ''
-		if (<ArrayBuffer>data) {
-			sData = String.fromCharCode(...new Uint8Array(<ArrayBuffer>data));
-			res = str2ab(sData);
-			console.log('[init-data-1]', data)
-			console.log('[twice-changed-data-1]', res)
-			this._socket.send(res);
-		} else {
-			// sData = String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer));
-			// res = str2uit8(sData)
-			console.log('[init-data-2]', data)
-			console.log('[twice-changed-data-2]', data)
-			this._socket.send(data);
-		}
+		// let res: ArrayBuffer | ArrayBufferView
+		// let sData:string = ''
+		// if (<ArrayBuffer>data) {
+		// 	sData = String.fromCharCode(...new Uint8Array(<ArrayBuffer>data));
+		// 	res = str2ab(sData);
+		// 	console.log('[init-data-1]', data)
+		// 	console.log('[twice-changed-data-1]', res)
+		// 	this._socket.send(res);
+		// } else {
+		// 	// sData = String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer));
+		// 	// res = str2uit8(sData)
+		// 	console.log('[init-data-2]', data)
+		// 	console.log('[twice-changed-data-2]', data)
+		// }
+		console.log('[init-data]', data)
+		this._socket.send(data);
 	}
 
 	close(): void {
@@ -243,14 +244,14 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return encrypted.ciphertext.toString();
 // }
 
-function str2ab(str: string): ArrayBuffer {
-	let buf = new ArrayBuffer(str.length * 2);
-	let bufView = new Uint8Array(buf);
-	for (let i = 0, strLen = str.length; i < strLen; i++) {
-		bufView[i] = str.charCodeAt(i);
-	}
-	return buf;
-}
+// function str2ab(str: string): ArrayBuffer {
+// 	let buf = new ArrayBuffer(str.length * 2);
+// 	let bufView = new Uint8Array(buf);
+// 	for (let i = 0, strLen = str.length; i < strLen; i++) {
+// 		bufView[i] = str.charCodeAt(i);
+// 	}
+// 	return buf;
+// }
 
 // function str2uit8(str: string): ArrayBufferView {
 // 	let arr = []
