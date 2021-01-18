@@ -154,6 +154,9 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		} else {
 			sData = unit8ToStr(<ArrayBufferView>data)
 			res = str2uit8(sData)
+			console.log('[res-data]', data)
+			console.log('[res-sData]', sData);
+			console.log('[res-res]', res);
 			this._socket.send(res);
 		}
 	}
