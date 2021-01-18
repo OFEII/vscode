@@ -147,14 +147,14 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			// Refuse to write data to closed WebSocket...
 			return;
 		}
+		console.log('[init-data]', data)
 		let sData:string = ''
-		if (new Uint8Array(<ArrayBuffer>data)) {
+		if (<ArrayBuffer>data) {
 			sData = window.btoa(String.fromCharCode(...new Uint8Array(<ArrayBuffer>data)));
 		} else {
 			sData = window.btoa(String.fromCharCode(...new Uint8Array((<ArrayBufferView>data).buffer)));
 		}
 		let res = str2ab(sData);
-		console.log('[init-data]', data)
 		console.log('[twice-changed-data]', res)
 		this._socket.send(res);
 	}
