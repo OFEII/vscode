@@ -147,18 +147,10 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			// Refuse to write data to closed WebSocket...
 			return;
 		}
-		let res: ArrayBuffer | ArrayBufferView
-		let sData:string = ''
 		if (data instanceof ArrayBuffer) {
-			console.log('first', data)
 			this._socket.send(data);
 		} else {
-			sData = 'type: auth'
-			res = str2uit8(sData)
-			console.log('[res-data]', data)
-			console.log('[res-sData]', sData);
-			console.log('[res-res]', res);
-			this._socket.send(res);
+			this._socket.send(data);
 		}
 	}
 
@@ -250,14 +242,14 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return buf;
 // }
 
-function str2uit8(str: string): ArrayBufferView {
-	let arr = []
-	for (let i = 0, j = str.length; i < j; ++i) {
-		arr.push(str.charCodeAt(i))
-	}
-	let tmpUnit8Array = new Uint8Array(arr)
-	return tmpUnit8Array
-}
+// function str2uit8(str: string): ArrayBufferView {
+// 	let arr = []
+// 	for (let i = 0, j = str.length; i < j; ++i) {
+// 		arr.push(str.charCodeAt(i))
+// 	}
+// 	let tmpUnit8Array = new Uint8Array(arr)
+// 	return tmpUnit8Array
+// }
 
 // function unit8ToStr(data: ArrayBufferView):string {
 // 	return String.fromCharCode(...new Uint8Array((data).buffer));

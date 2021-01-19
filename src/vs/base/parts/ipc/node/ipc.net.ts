@@ -27,7 +27,7 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)))
+		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(buff));
 		this.socket.on('data', listener);
 		return {
 			dispose: () => this.socket.off('data', listener)
@@ -97,11 +97,7 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 		super();
 		this.socket = socket;
 		this._incomingData = new ChunkStream();
-		this._register(this.socket.onData(data => {
-			console.log('[wsns-str]', data.toString());
-			console.log(['Wsns-vsbuffer'], data);
-			this._acceptChunk(data);
-		}));
+		this._register(this.socket.onData(data => this._acceptChunk(data)));
 	}
 
 	public dispose(): void {
@@ -225,8 +221,9 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				// read body
 
 				const body = this._incomingData.read(this._state.readLen);
-				unmask(body, this._state.mask);
 
+				unmask(body, this._state.mask);
+				console.log('[readbody-utf8]', body.toString());
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
 				this._state.mask = 0;
@@ -341,11 +338,11 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	console.log('[node-data-decrypto]', decrypted.toString(CryptoJS.enc.Base64))
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
-function printBuff(buff: Buffer): Buffer{
-	console.log('[ns-buff]', buff);
-	console.log('[ns-base64]', buff.toString('base64'));
-	return buff
-}
+// function (buff: Buffer): Buffer{
+// 	console.log('[ns-ondata-buff]', buff.buffer);
+// 	console.log('[ns-ondata.64]', buff.toString('base64'));
+// 	return buff
+// }
 
 // function buff2Str(buff:Buffer): string {
 // 	let str = buff.toString()
