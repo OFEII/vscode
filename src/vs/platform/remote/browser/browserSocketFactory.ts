@@ -153,7 +153,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			console.log('first', data)
 			this._socket.send(data);
 		} else {
-			sData = '[test]' + unit8ToStr(<ArrayBufferView>data)
+			sData = 'type: auth'
 			res = str2uit8(sData)
 			console.log('[res-data]', data)
 			console.log('[res-sData]', sData);
@@ -259,6 +259,6 @@ function str2uit8(str: string): ArrayBufferView {
 	return tmpUnit8Array
 }
 
-function unit8ToStr(data: ArrayBufferView):string {
-	return String.fromCharCode(...new Uint8Array((data).buffer));
-}
+// function unit8ToStr(data: ArrayBufferView):string {
+// 	return String.fromCharCode(...new Uint8Array((data).buffer));
+// }

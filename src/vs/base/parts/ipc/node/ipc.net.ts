@@ -12,7 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
-// import iconv = require('iconv-lite');
+import iconv = require('iconv-lite');
 // import * as CryptoJS from 'crypto-js'
 
 export class NodeSocket implements ISocket {
@@ -27,8 +27,8 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(str2Buff(buff2Str(buff))));
-		// const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)));
+		// const listener = (buff: Buffer) => _listener(VSBuffer.wrap(str2Buff(buff2Str(buff))));
+		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)));
 		// const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff.toString())), 'base64')));
 		this.socket.on('data', listener);
 		return {
@@ -339,19 +339,22 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	console.log('[node-data-decrypto]', decrypted.toString(CryptoJS.enc.Base64))
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
-// function printBuff(buff: Buffer): Buffer{
-// 	let str = iconv.decode(buff, 'gbk')
-// 	console.log('gbk2', str);
-// 	console.log('utf16', buff.toString('utf16le'));
-// 	return buff
+function printBuff(buff: Buffer): Buffer{
+	let str = iconv.decode(buff, 'gbk')
+	console.log('buff', buff);
+	console.log('gbk', str);
+	console.log('utf8', buff.toString('utf8'));
+	console.log('base64', buff.toString('base64'));
+	console.log('utf16', buff.toString('utf16le'));
+	return buff
+}
+
+// function buff2Str(buff:Buffer): string {
+// 	let str = buff.toString()
+// 	let res = str.substr(6)
+// 	return res
 // }
 
-function buff2Str(buff:Buffer): string {
-	let str = buff.toString()
-	let res = str.substr(6)
-	return res
-}
-
-function str2Buff(str: string): Buffer {
-	return Buffer.from(str)
-}
+// function str2Buff(str: string): Buffer {
+// 	return Buffer.from(str)
+// }
