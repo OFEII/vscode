@@ -220,10 +220,13 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 			} else if (this._state.state === ReadState.ReadBody) {
 				// read body
 
-				const body = this._incomingData.read(this._state.readLen);
+				let body = this._incomingData.read(this._state.readLen);
 
 				unmask(body, this._state.mask);
-				console.log('[readbody-utf8]', body.toString());
+				const str = body.toString()
+				if (str.indexOf('write') > 0) {
+					body = VSBuffer.fromString(str.slice(4))
+				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
 				this._state.mask = 0;
