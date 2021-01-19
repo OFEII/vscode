@@ -223,8 +223,12 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				let body = this._incomingData.read(this._state.readLen);
 
 				unmask(body, this._state.mask);
+
 				let str = body.toString()
+
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
+					console.log('[str-1]', str);
+					console.log('[str-2]', str.slice(4));
 					body = VSBuffer.fromString(str.slice(4))
 				} else {
 					body = body
