@@ -12,7 +12,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
-import iconv = require('iconv-lite');
+// import iconv = require('iconv-lite');
 // import * as CryptoJS from 'crypto-js'
 
 export class NodeSocket implements ISocket {
@@ -27,9 +27,7 @@ export class NodeSocket implements ISocket {
 	}
 
 	public onData(_listener: (e: VSBuffer) => void): IDisposable {
-		// const listener = (buff: Buffer) => _listener(VSBuffer.wrap(str2Buff(buff2Str(buff))));
-		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)));
-		// const listener = (buff: string) => _listener(VSBuffer.wrap(Buffer.from((_decryptNode(buff.toString())), 'base64')));
+		const listener = (buff: Buffer) => _listener(VSBuffer.wrap(printBuff(buff)))
 		this.socket.on('data', listener);
 		return {
 			dispose: () => this.socket.off('data', listener)
@@ -99,7 +97,11 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 		super();
 		this.socket = socket;
 		this._incomingData = new ChunkStream();
-		this._register(this.socket.onData(data => this._acceptChunk(data)));
+		this._register(this.socket.onData(data => {
+			console.log('[wsns-str]', data.toString());
+			console.log(['Wsns-vsbuffer'], data);
+			this._acceptChunk(data);
+		}));
 	}
 
 	public dispose(): void {
@@ -340,12 +342,8 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return decrypted.toString(CryptoJS.enc.Base64);
 // }
 function printBuff(buff: Buffer): Buffer{
-	let str = iconv.decode(buff, 'gbk')
-	console.log('buff', buff);
-	console.log('gbk', str);
-	console.log('utf8', buff.toString('utf8'));
-	console.log('base64', buff.toString('base64'));
-	console.log('utf16', buff.toString('utf16le'));
+	console.log('[ns-buff]', buff);
+	console.log('[ns-base64]', buff.toString('base64'));
 	return buff
 }
 
