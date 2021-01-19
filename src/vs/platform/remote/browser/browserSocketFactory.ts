@@ -152,8 +152,13 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		if (data instanceof ArrayBuffer) {
 			this._socket.send(data);
 		} else {
-			sData = 'test' + unit8ToStr(data)
-			res = str2uit8(sData)
+			sData = unit8ToStr(data)
+			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
+				sData = 'test' + sData
+				res = str2uit8(sData)
+			} else {
+				res = data
+			}
 			this._socket.send(res);
 		}
 	}
