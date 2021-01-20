@@ -229,10 +229,10 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					console.log('[str1]', str);
 					console.log('[buff-1-raw]', body)
 					let body2 = VSBuffer.fromString(str)
-					let body3 = str2buff1(str)
+					// let body3 = str2buff1(str)
 					let body4 = str2buff2(str)
 					console.log('[buff-1]', body2)
-					console.log('[buff-2]', body3)
+					// console.log('[buff-2]', body3)
 					console.log('[buff-3]', body4)
 				}
 				this._state.state = ReadState.PeekHeader;
@@ -370,11 +370,10 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return enc.decode(buff.buffer)
 // }
 
-let textEncoder: TextEncoder = new TextEncoder();
-function str2buff1(str: string): VSBuffer  {
-	textEncoder = new TextEncoder();
-	return VSBuffer.wrap(textEncoder.encode(str));
-}
+// function str2buff1(str: string): VSBuffer  {
+// 	const textEncoder = new TextEncoder();
+// 	return VSBuffer.wrap(textEncoder.encode(str));
+// }
 // function buff2str2(buff: VSBuffer): string {
 // 	let res = ''
 // 	let uint8 = new Uint8Array(buff.buffer)
