@@ -224,12 +224,26 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				unmask(body, this._state.mask);
 
-				console.log('[buff-1]', body)
 				let str = body.toString()
-				// if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
-				console.log('[str]', str);
-				let body2 = VSBuffer.fromString(str)
-				console.log('[buff-2]', body2)
+				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
+					console.log('[str1]', str);
+					console.log('[buff-1-1]', body)
+					let body2 = VSBuffer.fromString(str)
+					console.log('[buff-1-2]', body2)
+				}
+				if (str.indexOf('remotefilesystemwrite') >=0 && str.length > 0) {
+					console.log('[str2]', str);
+					console.log('[buff-2-1]', body)
+					let body3 = VSBuffer.fromString(str)
+					console.log('[buff-2-2]', body3)
+				}
+				if (str.indexOf('remotefilesystem^A^@^@^@^Ewrite') >=0 && str.length > 0) {
+					console.log('[str3]', str);
+					console.log('[buff-3-1]', body)
+					let body4 = VSBuffer.fromString(str)
+					console.log('[buff-3-2]', body4)
+				}
+
 				// } else {
 				// 	body = body
 				// }
