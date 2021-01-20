@@ -227,13 +227,14 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				let str = body.toString()
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
 					console.log('[str1]', str);
-					console.log('[buff-1-1]', body)
+					console.log('[buff-1-raw]', body)
 					let body2 = VSBuffer.fromString(str)
-					console.log('[buff-1-2]', body2)
+					let body3 = str2buff1(str)
+					let body4 = str2buff2(str)
+					console.log('[buff-1]', body2)
+					console.log('[buff-2]', body3)
+					console.log('[buff-3]', body4)
 				}
-				// } else {
-				// 	body = body
-				// }
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
 				this._state.mask = 0;
@@ -363,3 +364,32 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // function str2Buff(str: string): Buffer {
 // 	return Buffer.from(str)
 // }
+
+// function buff2str1(buff: VSBuffer): string {
+// 	let enc = new TextDecoder('utf-8')
+// 	return enc.decode(buff.buffer)
+// }
+
+let textEncoder: TextEncoder = new TextEncoder();
+function str2buff1(str: string): VSBuffer  {
+	textEncoder = new TextEncoder();
+	return VSBuffer.wrap(textEncoder.encode(str));
+}
+// function buff2str2(buff: VSBuffer): string {
+// 	let res = ''
+// 	let uint8 = new Uint8Array(buff.buffer)
+// 	for (let i = 0; i < uint8.length; i++) {
+// 		res += String.fromCharCode(uint8[i])
+// 	}
+// 	return res
+// }
+
+function str2buff2(str: string): VSBuffer  {
+	let arr = []
+	for (let i = 0, j = str.length; i < j; ++i) {
+		arr.push(str.charCodeAt(i))
+	}
+	let uint8Arr = new Uint8Array(arr)
+	return VSBuffer.wrap(uint8Arr)
+}
+
