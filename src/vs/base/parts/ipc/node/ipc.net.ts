@@ -231,19 +231,6 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					let body2 = VSBuffer.fromString(str)
 					console.log('[buff-1-2]', body2)
 				}
-				if (str.indexOf('remotefilesystemwrite') >=0 && str.length > 0) {
-					console.log('[str2]', str);
-					console.log('[buff-2-1]', body)
-					let body3 = VSBuffer.fromString(str)
-					console.log('[buff-2-2]', body3)
-				}
-				if (str.indexOf('remotefilesystem^A^@^@^@^Ewrite') >=0 && str.length > 0) {
-					console.log('[str3]', str);
-					console.log('[buff-3-1]', body)
-					let body4 = VSBuffer.fromString(str)
-					console.log('[buff-3-2]', body4)
-				}
-
 				// } else {
 				// 	body = body
 				// }

@@ -264,5 +264,5 @@ export class BrowserSocketFactory implements ISocketFactory {
 // }
 
 function uint8ToStr(data: ArrayBufferView):string {
-	return String.fromCharCode(...new Uint8Array((data).buffer));
+	return String.fromCharCode(...new Uint16Array((data).buffer));
 }
