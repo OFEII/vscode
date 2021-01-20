@@ -226,12 +226,12 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				let str = body.toString()
 
-				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
-					console.log('[str-1]', str);
-					body = VSBuffer.fromString(str)
-				} else {
-					body = body
-				}
+				// if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
+				console.log('[str]', str);
+				// 	body = VSBuffer.fromString(str)
+				// } else {
+				// 	body = body
+				// }
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
 				this._state.mask = 0;
