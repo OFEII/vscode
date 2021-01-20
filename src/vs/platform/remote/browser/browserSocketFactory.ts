@@ -264,7 +264,13 @@ export class BrowserSocketFactory implements ISocketFactory {
 // }
 
 function uint8ToStr(data: ArrayBufferView):string {
-	let enc = new TextDecoder('utf-8')
-	return enc.decode(data)
+	let res = ''
+	let uint8 = new Uint8Array(data.buffer)
+	for (let i = 0; i < uint8.length; i++) {
+		res += String.fromCharCode(uint8[i])
+	}
+	return res
+	// let enc = new TextDecoder('utf-8')
+	// return enc.decode(data)
 	// return String.fromCharCode(...new Uint16Array((data).buffer));
 }
