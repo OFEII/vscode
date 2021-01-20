@@ -147,20 +147,20 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			// Refuse to write data to closed WebSocket...
 			return;
 		}
-		let res: ArrayBuffer | ArrayBufferView
-		let sData:string = ''
+		// let res: ArrayBuffer | ArrayBufferView
+		// let sData:string = ''
 		if (data instanceof ArrayBuffer) {
 			this._socket.send(data);
 		} else {
-			sData = unit8ToStr(data)
-			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
-				// sData = 'test' + sData
-				// res = str2uit8(sData)
-				res = data
-			} else {
-				res = data
-			}
-			this._socket.send(res);
+			// sData = uint8ToStr(data)
+			// if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
+			// 	// sData = 'test' + sData
+			// 	// res = str2uit8(sData)
+			// 	res = data
+			// } else {
+				// res = data
+			// }
+			this._socket.send(data);
 		}
 	}
 
@@ -261,6 +261,6 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return tmpUnit8Array
 // }
 
-function unit8ToStr(data: ArrayBufferView):string {
-	return String.fromCharCode(...new Uint8Array((data).buffer));
-}
+// function uint8ToStr(data: ArrayBufferView):string {
+// 	return String.fromCharCode(...new Uint8Array((data).buffer));
+// }
