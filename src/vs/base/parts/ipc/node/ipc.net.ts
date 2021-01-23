@@ -226,11 +226,11 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				let str = body.toString()
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
-					console.log('[str1]', str);
 					console.log('[buff-1-raw]', body)
-					let body4 = str2buff2(str)
-					console.log('[buff-3]', body4)
-					console.log('diff-3-4', body === body4)
+					let base64 = vsbuffer2Base64(body)
+					let buffer2 = base64ToVsbuff(base64)
+					console.log('[buff-2]', buffer2)
+					console.log('diff-1-2', body === buffer2)
 				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
@@ -367,10 +367,9 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return enc.decode(buff.buffer)
 // }
 
-// let textEncoder: TextEncoder = new TextEncoder();
 // function str2buff1(str: string): VSBuffer  {
-// 	textEncoder = new TextEncoder();
-// 	return VSBuffer.wrap(textEncoder.encode(str));
+	// const textEncoder = new TextEncoder('base64');
+	// return VSBuffer.wrap(textEncoder.encode(str));
 // }
 // function buff2str2(buff: VSBuffer): string {
 // 	let res = ''
@@ -381,12 +380,20 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return res
 // }
 
-function str2buff2(str: string): VSBuffer  {
-	let arr = []
-	for (let i = 0, j = str.length; i < j; ++i) {
-		arr.push(str.charCodeAt(i))
-	}
-	let uint8Arr = new Uint8Array(arr)
-	return VSBuffer.wrap(uint8Arr)
+// function str2buff(str: string): VSBuffer  {
+// 	let arr = []
+// 	for (let i = 0, j = str.length; i < j; ++i) {
+// 		arr.push(str.charCodeAt(i))
+// 	}
+// 	return VSBuffer.wrap(new Uint8Array(arr))
+// }
+
+function base64ToVsbuff(str: string): VSBuffer {
+	const buf = Buffer.from(str, 'base64')
+	return VSBuffer.wrap(buf)
+}
+function vsbuffer2Base64(buff: VSBuffer): string {
+	return Buffer.from(buff.toString()).toString('base64')
+
 }
 

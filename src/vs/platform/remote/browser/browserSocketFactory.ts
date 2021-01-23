@@ -156,11 +156,6 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
 				console.log('[c-buff]', data);
 				console.log('[c-str]', sData);
-			// 	// sData = 'test' + sData
-			// 	// res = str2uit8(sData)
-			// 	res = data
-			// } else {
-				// res = data
 			}
 			this._socket.send(data);
 		}
