@@ -271,10 +271,12 @@ function uint8ToStr(data: ArrayBufferView):string {
 }
 
 function base64ToUint8(str: string): ArrayBufferView {
-	let enc = new TextEncoder()
-	let uint8_0 = enc.encode(str)
+	// let enc = new TextEncoder()
+	// let uint8_0 = enc.encode(str)
+	let uint8_0 = new Uint8Array(Buffer.from(str, 'base64').buffer)
 	let uint8_1 = str2uit8(window.atob(str))
 	let uint8_2 = str2uit8(decodeURI(window.atob(str)))
+	// console.log('[uint8_0]', uint8_0)
 	console.log('[uint8_0]', uint8_0)
 	console.log('[uint8_1]', uint8_1)
 	console.log('[uint8_2]', uint8_2)
@@ -282,10 +284,11 @@ function base64ToUint8(str: string): ArrayBufferView {
 }
 
 function uint8ToBase64(data: ArrayBufferView): string {
-	let enc = new TextDecoder('base64')
-	let data_base64_0 = enc.decode(data)
+	// let enc = new TextDecoder('base64')
+	// let data_base64_0 = enc.decode(data)
+	let data_base64_0 = window.btoa(uint8ToStr(data))
 	let data_base64_1 = Buffer.from(data.buffer).toString('base64')
 	console.log('[data_base64_0]', data_base64_0)
 	console.log('[data_base64_1]', data_base64_1)
-	return data_base64_0
+	return data_base64_1
 }
