@@ -228,9 +228,13 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
 					console.log('[buff-1-raw]', body)
 					let base64 = vsbuffer2Base64(body)
-					let buffer2 = base64ToVsbuff(base64)
+					let buffer2 = base64ToVsbuff1(base64)
+					let buffer3 = base64ToVsbuff2(base64)
 					console.log('[buff-2]', buffer2)
+					console.log('[buff-3]', buffer3)
 					console.log('diff-1-2', body === buffer2)
+					console.log('diff-1-3', body === buffer3)
+					console.log('diff-2-3', buffer2 === buffer3)
 				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
@@ -380,20 +384,38 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return res
 // }
 
-// function str2buff(str: string): VSBuffer  {
-// 	let arr = []
-// 	for (let i = 0, j = str.length; i < j; ++i) {
-// 		arr.push(str.charCodeAt(i))
-// 	}
-// 	return VSBuffer.wrap(new Uint8Array(arr))
-// }
+function str2buff(str: string): VSBuffer  {
+	let arr = []
+	for (let i = 0, j = str.length; i < j; ++i) {
+		arr.push(str.charCodeAt(i))
+	}
+	return VSBuffer.wrap(new Uint8Array(arr))
+}
 
-function base64ToVsbuff(str: string): VSBuffer {
-	const buf = Buffer.from(str, 'base64')
-	return VSBuffer.wrap(buf)
+function base64ToVsbuff1(str: string): VSBuffer {
+	return VSBuffer.wrap(Buffer.from(str, 'base64'))
+}
+function base64ToVsbuff2(str: string): VSBuffer {
+	let utf8 = Buffer.from(str, 'base64').toString()
+	return str2buff(utf8)
 }
 function vsbuffer2Base64(buff: VSBuffer): string {
-	return Buffer.from(buff.toString()).toString('base64')
+	// const textDecoder = new TextDecoder()
+	const str1_utf8 = buff.toString()
+	// const str2_utf8 = textDecoder.decode(buff.buffer)
+	const str1_64_0 = Buffer.from(str1_utf8).toString('base64')
+	const str1_64_1 = Buffer.from(buff.buffer).toString('base64')
+	// const str2_64_0 = Buffer.from(str2_utf8).toString('base64')
+	console.log('str1_utf8', str1_utf8)
+	// console.log('str2_utf8', str2_utf8)
+	console.log('str10', str1_64_0)
+	console.log('str11', str1_64_1)
+	// console.log('str20', str2_64_0)
+	console.log('diff-10-11', str1_64_0 === str1_64_1)
+	// console.log('diff-10-20', str1_64_0 === str2_64_0)
+	// console.log('diff-20-11', str2_64_0 === str1_64_1)
+
+	return Buffer.from(buff.buffer).toString('base64')
 
 }
 
