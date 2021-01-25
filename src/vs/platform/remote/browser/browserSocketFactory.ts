@@ -259,7 +259,7 @@ function str2uit8(str: string): ArrayBufferView {
 	return tmpUnit8Array
 }
 function decodeBase64(base64: string): string {
-	const str = window.atob(base64)
+	const str = decodeURIComponent(window.atob(base64))
 	let arr = []
 	for (let i = 0, j = str.length; i < j; ++i) {
 		arr.push(str.charCodeAt(i))
@@ -299,27 +299,27 @@ function base64ToUint8(base64: string): ArrayBufferView {
 function uint8ToBase64(data: ArrayBufferView): string {
 	// let enc = new TextDecoder('base64')
 	// let data_base64_0 = enc.decode(data)
-	let data_base64_0 = btoa(uint8ToStr(data))
-	let data_base64_1 = Uint8ToBase64(data)
+	let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
+	// let data_base64_1 = Uint8ToBase64(data)
 	console.log('[data_base64_0]', data_base64_0)
-	console.log('[data_base64_1]', data_base64_1)
+	// console.log('[data_base64_1]', data_base64_1)
 	return data_base64_0
 }
 
-function Uint8ToBase64(data: ArrayBufferView):string{
-	const uint8 = new Uint8Array(data.buffer)
-  const CHUNK_SIZE = 0x8000; //arbitrary number
-  const length = data.byteLength;
-  let index = 0;
-  let result = '';
-	let slice;
-  while (index < length) {
-    slice = uint8.subarray(index, Math.min(index + CHUNK_SIZE, length));
-    result += String.fromCharCode.apply(slice);
-    index += CHUNK_SIZE;
-	}
-  return btoa(result);
-}
+// function Uint8ToBase64(data: ArrayBufferView):string{
+// 	const uint8 = new Uint8Array(data.buffer)
+//   const CHUNK_SIZE = 0x8000; //arbitrary number
+//   const length = data.byteLength;
+//   let index = 0;
+//   let result = '';
+// 	let slice;
+//   while (index < length) {
+//     slice = uint8.subarray(index, Math.min(index + CHUNK_SIZE, length));
+//     result += String.fromCharCode.apply(slice);
+//     index += CHUNK_SIZE;
+// 	}
+//   return btoa(result);
+// }
 function urlBase64ToUint8Array(base64String: string): ArrayBufferView {
 	const e = '='
   const padding = repeat(e, ((4 - base64String.length % 4) % 4));
