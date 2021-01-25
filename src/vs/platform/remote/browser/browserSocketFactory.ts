@@ -156,9 +156,11 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
 				console.log('[init-buffer]', data);
 				let str_base64 = uint8ToBase64(data)
-				base64ToUint8(str_base64)
+				let res = base64ToUint8(str_base64)
+				this._socket.send(res);
+			} else {
+				this._socket.send(data);
 			}
-			this._socket.send(data);
 		}
 	}
 
@@ -270,72 +272,30 @@ function decodeBase64(base64: string): string {
 }
 
 function uint8ToStr(data: ArrayBufferView):string {
-	// let res = ''
-	// let uint8 = new Uint8Array(data.buffer)
-	// for (let i = 0; i < uint8.length; i++) {
-	// 	res += String.fromCharCode(uint8[i])
-	// }
-	// return res
-	let enc = new TextDecoder('utf-8')
+	let enc = new TextDecoder('')
 	return enc.decode(data)
-	// return String.fromCharCode(...new Uint16Array((data).buffer));
+}
+function uint8ToStr2(data: ArrayBufferView):string {
+	let res = ''
+	let uint8 = new Uint8Array(data.buffer)
+	for (let i = 0; i < uint8.length; i++) {
+		res += String.fromCharCode(uint8[i])
+	}
+	return res
 }
 
 function base64ToUint8(base64: string): ArrayBufferView {
-	// let enc = new TextEncoder()
-	// let uint8_0 = enc.encode(str)
-	// let uint8_0 = new Uint8Array(Buffer.from(str, 'base64').buffer)
 	let utf8 = decodeBase64(base64)
-	let res1 = str2uit8(utf8)
-	let res2 = urlBase64ToUint8Array(base64)
-	// console.log('[uint8_0]', uint8_0)
+	let uint8Res = str2uit8(utf8)
 	console.log('[uint8_utf8]', utf8)
-	console.log('[uint8_1]', res1)
-	console.log('[uint8_2]', res2)
-
-	return res1
+	console.log('[uint8_1]', uint8Res)
+	return uint8Res
 }
 
 function uint8ToBase64(data: ArrayBufferView): string {
-	// let enc = new TextDecoder('base64')
-	// let data_base64_0 = enc.decode(data)
 	let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
-	// let data_base64_1 = Uint8ToBase64(data)
+	let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
 	console.log('[data_base64_0]', data_base64_0)
-	// console.log('[data_base64_1]', data_base64_1)
+	console.log('[data_base64_1]', data_base64_1)
 	return data_base64_0
-}
-
-// function Uint8ToBase64(data: ArrayBufferView):string{
-// 	const uint8 = new Uint8Array(data.buffer)
-//   const CHUNK_SIZE = 0x8000; //arbitrary number
-//   const length = data.byteLength;
-//   let index = 0;
-//   let result = '';
-// 	let slice;
-//   while (index < length) {
-//     slice = uint8.subarray(index, Math.min(index + CHUNK_SIZE, length));
-//     result += String.fromCharCode.apply(slice);
-//     index += CHUNK_SIZE;
-// 	}
-//   return btoa(result);
-// }
-function urlBase64ToUint8Array(base64String: string): ArrayBufferView {
-	const e = '='
-  const padding = repeat(e, ((4 - base64String.length % 4) % 4));
-  let base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  let rawData = window.atob(base64);
-  let outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-function repeat(str: string, n: number): string {
-	return new Array(n).join(str);
 }
