@@ -154,8 +154,8 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 		} else {
 			sData = uint8ToStr(data)
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
-				console.log('[c-buff]', data);
-				console.log('[c-str]', sData);
+				let str_base64 = uint8ToBase64(data)
+				base64ToUint8(str_base64)
 			}
 			this._socket.send(data);
 		}
@@ -249,14 +249,14 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return buf;
 // }
 
-// function str2uit8(str: string): ArrayBufferView {
-// 	let arr = []
-// 	for (let i = 0, j = str.length; i < j; ++i) {
-// 		arr.push(str.charCodeAt(i))
-// 	}
-// 	let tmpUnit8Array = new Uint8Array(arr)
-// 	return tmpUnit8Array
-// }
+function str2uit8(str: string): ArrayBufferView {
+	let arr = []
+	for (let i = 0, j = str.length; i < j; ++i) {
+		arr.push(str.charCodeAt(i))
+	}
+	let tmpUnit8Array = new Uint8Array(arr)
+	return tmpUnit8Array
+}
 
 function uint8ToStr(data: ArrayBufferView):string {
 	let res = ''
@@ -268,4 +268,24 @@ function uint8ToStr(data: ArrayBufferView):string {
 	// let enc = new TextDecoder('utf-8')
 	// return enc.decode(data)
 	// return String.fromCharCode(...new Uint16Array((data).buffer));
+}
+
+function base64ToUint8(str: string): ArrayBufferView {
+	let enc = new TextEncoder()
+	let uint8_0 = enc.encode(str)
+	let uint8_1 = str2uit8(window.atob(str))
+	let uint8_2 = str2uit8(decodeURI(window.atob(str)))
+	console.log('[uint8_0]', uint8_0)
+	console.log('[uint8_1]', uint8_1)
+	console.log('[uint8_2]', uint8_2)
+	return uint8_0
+}
+
+function uint8ToBase64(data: ArrayBufferView): string {
+	let enc = new TextDecoder('base64')
+	let data_base64_0 = enc.decode(data)
+	let data_base64_1 = Buffer.from(data.buffer).toString('base64')
+	console.log('[data_base64_0]', data_base64_0)
+	console.log('[data_base64_1]', data_base64_1)
+	return data_base64_0
 }
