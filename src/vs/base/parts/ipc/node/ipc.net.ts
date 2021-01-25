@@ -228,13 +228,10 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
 					console.log('[buff-1-raw]', body)
 					let base64 = vsbuffer2Base64(body)
-					let buffer2 = base64ToVsbuff1(base64)
+					body = base64ToVsbuff1(base64)
 					// let buffer3 = base64ToVsbuff2(base64)
-					console.log('[buff-2]', buffer2)
+					console.log('[buff-2]', body)
 					// console.log('[buff-3]', buffer3)
-					console.log('[diff-1-2_===]', body.buffer === buffer2.buffer)
-					console.log('[diff-1-2_==1]', body.buffer == buffer2.buffer)
-					console.log('[diff-1-2_==2]', body == buffer2)
 					// console.log('diff-1-3', body === buffer3)
 					// console.log('diff-2-3', buffer2 === buffer3)
 				}
