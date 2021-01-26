@@ -253,20 +253,22 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return buf;
 // }
 
-function str2uit8(str: string): ArrayBufferView {
-	let arr = []
-	for (let i = 0, j = str.length; i < j; ++i) {
-		arr.push(str.charCodeAt(i))
-	}
-	let tmpUnit8Array = new Uint8Array(arr)
-	return tmpUnit8Array
-}
+// function str2uit8(str: string): ArrayBufferView {
+// 	let arr = []
+// 	for (let i = 0, j = str.length; i < j; ++i) {
+// 		arr.push(str.charCodeAt(i))
+// 	}
+// 	let tmpUnit8Array = new Uint8Array(arr)
+// 	return tmpUnit8Array
+// }
 function decodeBase64(base64: string): string {
 	const str = decodeURIComponent(window.atob(base64))
 	let arr = []
 	for (let i = 0, j = str.length; i < j; ++i) {
 		arr.push(str.charCodeAt(i))
 	}
+	let vsbuffer = VSBuffer.fromString(base64).buffer
+	console.log('[uint8-vsbuffer]', vsbuffer);
 	let uint8 = new Uint8Array(arr)
 	const decoder = new TextDecoder()
 	return decoder.decode(uint8)
@@ -287,16 +289,39 @@ function uint8ToStr2(data: ArrayBufferView):string {
 
 function base64ToUint8(base64: string): ArrayBufferView {
 	let utf8 = decodeBase64(base64)
-	let uint8Res = str2uit8(utf8)
+	let uint8Res = str2Uint8(utf8)
 	console.log('[uint8_utf8]', utf8)
-	console.log('[uint8_1]', uint8Res)
+	console.log('[convertion-uint8]', uint8Res)
 	return uint8Res
 }
 
 function uint8ToBase64(data: ArrayBufferView): string {
-	let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
+	// let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
 	let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
-	console.log('[data_base64_0]', data_base64_0)
-	console.log('[data_base64_1]', data_base64_1)
-	return data_base64_0
+	// console.log('[data_base64_0]', data_base64_0)
+	console.log('[data_base64]', data_base64_1)
+	return data_base64_1
+}
+function str2Uint8(str: string): ArrayBufferView {
+	let bytes = new Array()
+	let c:number
+	for (let i = 0; i < str.length; i++) {
+			c = str.charCodeAt(i);
+			if (c >= 0x010000 && c <= 0x10FFFF) {
+					bytes.push(((c >> 18) & 0x07) | 0xF0)
+					bytes.push(((c >> 12) & 0x3F) | 0x80)
+					bytes.push(((c >> 6) & 0x3F) | 0x80)
+					bytes.push((c & 0x3F) | 0x80);
+			} else if (c >= 0x000800 && c <= 0x00FFFF) {
+					bytes.push(((c >> 12) & 0x0F) | 0xE0)
+					bytes.push(((c >> 6) & 0x3F) | 0x80)
+					bytes.push((c & 0x3F) | 0x80)
+			} else if (c >= 0x000080 && c <= 0x0007FF) {
+					bytes.push(((c >> 6) & 0x1F) | 0xC0)
+					bytes.push((c & 0x3F) | 0x80)
+			} else {
+					bytes.push(c & 0xFF)
+			}
+	}
+	return new Uint8Array(bytes)
 }
