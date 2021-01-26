@@ -157,7 +157,8 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 				console.log('[init-buffer]', data);
 				let str_base64 = uint8ToBase64(data)
 				let res = base64ToUint8(str_base64)
-				this._socket.send(res);
+				console.log('[uint-res]', res);
+				this._socket.send(data);
 			} else {
 				this._socket.send(data);
 			}
@@ -272,7 +273,7 @@ function decodeBase64(base64: string): string {
 }
 
 function uint8ToStr(data: ArrayBufferView):string {
-	let enc = new TextDecoder('')
+	let enc = new TextDecoder()
 	return enc.decode(data)
 }
 function uint8ToStr2(data: ArrayBufferView):string {
