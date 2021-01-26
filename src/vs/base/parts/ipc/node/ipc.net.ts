@@ -229,11 +229,7 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					console.log('[buff-1-raw]', body)
 					let base64 = vsbuffer2Base64(body)
 					body = base64ToVsbuff1(base64)
-					// let buffer3 = base64ToVsbuff2(base64)
 					console.log('[buff-2]', body)
-					// console.log('[buff-3]', buffer3)
-					// console.log('diff-1-3', body === buffer3)
-					// console.log('diff-2-3', buffer2 === buffer3)
 				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;

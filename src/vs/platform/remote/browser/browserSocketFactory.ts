@@ -153,11 +153,10 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			this._socket.send(data);
 		} else {
 			sData = uint8ToStr(data)
-			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 ) {
+			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 && sData.length <= 1000) {
 				console.log('[init-buffer]', data);
 				let str_base64 = uint8ToBase64(data)
-				let res = base64ToUint8(str_base64)
-				console.log('[uint-res]', res);
+				base64ToUint8(str_base64)
 				this._socket.send(data);
 			} else {
 				this._socket.send(data);
@@ -253,7 +252,7 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return buf;
 // }
 
-// function str2uit8(str: string): ArrayBufferView {
+// function str2Uit8_2(str: string): ArrayBufferView {
 // 	let arr = []
 // 	for (let i = 0, j = str.length; i < j; ++i) {
 // 		arr.push(str.charCodeAt(i))
@@ -296,11 +295,11 @@ function base64ToUint8(base64: string): ArrayBufferView {
 }
 
 function uint8ToBase64(data: ArrayBufferView): string {
-	// let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
+	let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
 	let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
-	// console.log('[data_base64_0]', data_base64_0)
+	console.log('[data_base64_0]', data_base64_0)
 	console.log('[data_base64]', data_base64_1)
-	return data_base64_1
+	return data_base64_0
 }
 function str2Uint8(str: string): ArrayBufferView {
 	let bytes = new Array()
