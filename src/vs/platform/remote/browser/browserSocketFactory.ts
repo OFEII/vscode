@@ -253,12 +253,13 @@ export class BrowserSocketFactory implements ISocketFactory {
 // }
 
 function str2Uit8_2(str: string): ArrayBufferView {
-	let arr = []
-	for (let i = 0, j = str.length; i < j; ++i) {
-		arr.push(str.charCodeAt(i))
-	}
-	let tmpUnit8Array = new Uint8Array(arr)
-	return tmpUnit8Array
+	// let arr = []
+	// for (let i = 0, j = str.length; i < j; ++i) {
+	// 	arr.push(str.charCodeAt(i))
+	// }
+	// let tmpUnit8Array = new Uint8Array(arr)
+	// return tmpUnit8Array
+	return new TextEncoder().encode(str)
 }
 function decodeBase64(base64: string): string {
 	const str = decodeURIComponent(window.atob(base64))
@@ -266,8 +267,6 @@ function decodeBase64(base64: string): string {
 	for (let i = 0, j = str.length; i < j; ++i) {
 		arr.push(str.charCodeAt(i))
 	}
-	let vsbuffer = VSBuffer.fromString(str).buffer
-	console.log('[uint8-vsbuffer]', vsbuffer);
 	let uint8 = new Uint8Array(arr)
 	const decoder = new TextDecoder()
 	return decoder.decode(uint8)
