@@ -156,13 +156,19 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 && sData.length <= 1000) {
 				// let header = data.buffer.slice(0, 88)
 				let header_len = headerLen(data)
-				let body = new Uint8Array(data.buffer.slice(header_len))
-				let str_base64 = uint8ToBase64(body)
-				base64ToUint8(str_base64)
-				console.log('[body]', body)
-				console.log('[body-utf8]', uint8ToStr(body));
-				console.log('[converted-body]', str2Uit8(uint8ToStr(body)))
-
+				let all_data = new Uint8Array(data.buffer)
+				let h1 = all_data.slice(0, header_len)
+				let h2 = all_data.slice(header_len)
+				let str_base64 = uint8ToBase64(h2)
+				let body_converted1 = str2Uit8(uint8ToStr(h2))
+				let body_converted2 = base64ToUint8(str_base64)
+				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer))
+				console.log('[data1]', all_data)
+				console.log('[data2]', all_data_converted )
+				console.log('[body-utf8]', uint8ToStr(h2));
+				console.log('[converted-body1]', body_converted1)
+				console.log('[converted-body2]', body_converted2)
+				data = all_data_converted
 			}
 			this._socket.send(data)
 		}
@@ -267,6 +273,7 @@ function decodeBase64(base64: string): string {
 	return decoder.decode(uint8)
 }
 
+// nice uint8 => str
 function uint8ToStr(data: ArrayBufferView): string {
 	let enc = new TextDecoder()
 	return enc.decode(data)
@@ -287,10 +294,10 @@ function base64ToUint8(base64: string): ArrayBufferView {
 	return uint8Res
 }
 
-function  uint8ToBase64(data: ArrayBufferView): string {
-	let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
+function uint8ToBase64(data: ArrayBufferView): string {
+	// let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data))) // failed => base64
 	let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
-	console.log('[data_base64_0]', data_base64_0);
+	// console.log('[data_base64_0]', data_base64_0); // failed => base64
 	console.log('[data_base64_1]', data_base64_1);
 	return data_base64_1
 }
@@ -309,4 +316,18 @@ function headerLen(data: ArrayBufferView): number {
 		}
 	}
 	return index + 85
+}
+
+function concatUint8Array(...arrays: Uint8Array[]): ArrayBufferView {
+  let length = 0;
+  for (let arr of arrays) {
+    length += arr.length;
+  }
+  let res = new Uint8Array(length);
+  let offset = 0;
+  for (let arr of arrays) {
+    res.set(arr, offset);
+    offset += arr.length;
+  }
+  return res;
 }
