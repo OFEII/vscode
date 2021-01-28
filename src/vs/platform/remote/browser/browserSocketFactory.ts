@@ -155,14 +155,13 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			sData = uint8ToStr(data)
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 && sData.length <= 1000) {
 				// let header = data.buffer.slice(0, 88)
-				let body = new Uint8Array(data.buffer.slice(88))
+				let header_len = headerLen(data)
+				let body = new Uint8Array(data.buffer.slice(header_len))
 				let str_base64 = uint8ToBase64(body)
-				let uint8 = base64ToUint8(str_base64)
+				base64ToUint8(str_base64)
 				console.log('[body]', body)
 				console.log('[body-utf8]', uint8ToStr(body));
 				console.log('[converted-body]', str2Uit8(uint8ToStr(body)))
-				console.log('[body-base64]', str_base64);
-				console.log('[converted-body2]', uint8);
 
 			}
 			this._socket.send(data)
@@ -272,24 +271,42 @@ function uint8ToStr(data: ArrayBufferView): string {
 	let enc = new TextDecoder()
 	return enc.decode(data)
 }
-// function uint8ToStr2(data: ArrayBufferView):string {
-// 	let res = ''
-// 	let uint8 = new Uint8Array(data.buffer)
-// 	for (let i = 0; i < uint8.length; i++) {
-// 		res += String.fromCharCode(uint8[i])
-// 	}
-// 	return res
-// }
+function uint8ToStr2(data: ArrayBufferView):string {
+	let res = ''
+	let uint8 = new Uint8Array(data.buffer)
+	for (let i = 0; i < uint8.length; i++) {
+		res += String.fromCharCode(uint8[i])
+	}
+	return res
+}
 
 function base64ToUint8(base64: string): ArrayBufferView {
 	let utf8 = decodeBase64(base64)
 	let uint8Res = str2Uit8(utf8)
-	console.log('[body-utf8-2]', utf8)
+	console.log('[converted-body2]', utf8)
 	return uint8Res
 }
 
 function  uint8ToBase64(data: ArrayBufferView): string {
 	let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data)))
-	// let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
-	return data_base64_0
+	let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
+	console.log('[data_base64_0]', data_base64_0);
+	console.log('[data_base64_1]', data_base64_1);
+	return data_base64_1
+}
+
+// get the len of header
+function headerLen(data: ArrayBufferView): number {
+	const uint8 = new Uint8Array(data.buffer)
+	const uint8_31 = uint8.slice(31, 70)
+	let index:number = 0
+	for (let i = 0; i < uint8_31.length; i++) {
+		if (uint8_31[i] === 1) {
+			index = i
+			console.log('[header-i]', index);
+			console.log('[header-len]', 85 + index);
+			break
+		}
+	}
+	return index + 85
 }
