@@ -318,6 +318,7 @@ function headerLen(data: ArrayBufferView): number {
 	return index + 85
 }
 
+// concat 2+ uint8Array
 function concatUint8Array(...arrays: Uint8Array[]): ArrayBufferView {
   let length = 0;
   for (let arr of arrays) {

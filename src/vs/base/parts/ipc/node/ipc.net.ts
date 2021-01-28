@@ -225,11 +225,18 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				unmask(body, this._state.mask);
 
 				let str = body.toString()
-				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0) {
-					console.log('[buff-1-raw]', body)
-					let base64 = vsbuffer2Base64(body)
-					body = base64ToVsbuff1(base64)
-					console.log('[buff-2]', body)
+				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0 && str.length <= 1000) {
+					let header_len = headerLen(body.buffer)
+					let h1 = body.buffer.slice(0, header_len)
+					let h2 = body.buffer.slice(header_len)
+					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
+					let body_converted = base64ToVsbuff(body_base64)
+					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted])
+					console.log('[body]', VSBuffer.wrap(h2));
+					console.log('[body_base64]', body_base64);
+					console.log('body_converted', body_converted);
+					console.log('[all_data_converted]', all_data_converted);
+					body = body_converted
 				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
@@ -387,30 +394,40 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return VSBuffer.wrap(new Uint8Array(arr))
 // }
 
-function base64ToVsbuff1(str: string): VSBuffer {
+function base64ToVsbuff(str: string): VSBuffer {
 	return VSBuffer.wrap(Buffer.from(str, 'base64'))
 }
 // function base64ToVsbuff2(str: string): VSBuffer {
 // 	let utf8 = Buffer.from(str, 'base64').toString()
 // 	return str2buff(utf8)
 // }
+// VSBUFFER => BASE64
 function vsbuffer2Base64(buff: VSBuffer): string {
 	// const textDecoder = new TextDecoder()
-	const str1_utf8 = buff.toString()
+	// const str1_utf8 = buff.toString()
 	// const str2_utf8 = textDecoder.decode(buff.buffer)
-	const str1_64_0 = Buffer.from(str1_utf8).toString('base64')
-	const str1_64_1 = Buffer.from(buff.buffer).toString('base64')
-	// const str2_64_0 = Buffer.from(str2_utf8).toString('base64')
-	console.log('[str1_utf8]', str1_utf8)
-	// console.log('str2_utf8', str2_utf8)
-	console.log('[str10]', str1_64_0)
-	console.log('[str11]', str1_64_1)
-	// console.log('str20', str2_64_0)
-	console.log('[diff-10-11]', str1_64_0 === str1_64_1)
-	// console.log('diff-10-20', str1_64_0 === str2_64_0)
-	// console.log('diff-20-11', str2_64_0 === str1_64_1)
-
+	// const str1_64_0 = Buffer.from(str1_utf8).toString('base64')
+	// const str1_64_1 = Buffer.from(buff.buffer).toString('base64')
+	// console.log('[str1_utf8]', str1_utf8)
+	// console.log('[str10]', str1_64_0)
+	// console.log('[str11]', str1_64_1)
+	// console.log('[diff-10-11]', str1_64_0 === str1_64_1)
 	return Buffer.from(buff.buffer).toString('base64')
 
 }
 
+// get the len of header
+function headerLen(data: ArrayBufferView): number {
+	const uint8 = new Uint8Array(data.buffer)
+	const uint8_31 = uint8.slice(31, 70)
+	let index:number = 0
+	for (let i = 0; i < uint8_31.length; i++) {
+		if (uint8_31[i] === 1) {
+			index = i
+			console.log('[header-i]', index);
+			console.log('[header-len]', 85 + index);
+			break
+		}
+	}
+	return index + 85
+}
