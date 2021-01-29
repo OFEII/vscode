@@ -360,7 +360,7 @@ const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");
 const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');
 
 function encrypt(word: string): string {
-  let encJson = CryptoJS.AES.encrypt(JSON.stringify(word), key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString()
+  let encJson = CryptoJS.AES.encrypt(word, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString()
   let encData = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(encJson))
   return encData
 }

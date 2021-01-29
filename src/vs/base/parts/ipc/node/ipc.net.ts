@@ -461,5 +461,5 @@ const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');
 function decrypt(word: string): string {
   let decData = CryptoJS.enc.Base64.parse(word).toString(CryptoJS.enc.Utf8)
   let bytes = CryptoJS.AES.decrypt(decData, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(CryptoJS.enc.Utf8)
-  return JSON.parse(bytes)
+  return bytes
 }
