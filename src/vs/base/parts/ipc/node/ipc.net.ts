@@ -230,13 +230,13 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					let header_len = headerLen(body.buffer)
 					let h1 = body.buffer.slice(0, header_len)
 					let h2 = body.buffer.slice(header_len)
-					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
+					console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
+					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2)).slice(4)
 					let body_converted = base64ToVsbuff(body_base64)
 					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted])
 					console.log('[splitbody]', VSBuffer.wrap(h2));
-					console.log('[body_base64]', body_base64);
+					console.log('[body_base64-splited]', body_base64);
 					console.log('body_converted', body_converted);
-
 					console.log('[all_data_converted]', all_data_converted);
 					body = all_data_converted
 				}

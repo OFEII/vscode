@@ -159,15 +159,18 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 				let all_data = new Uint8Array(data.buffer)
 				let h1 = all_data.slice(0, header_len)
 				let h2 = all_data.slice(header_len)
-				let str_base64 = uint8ToBase64(h2)
+				let str_base64 = 'test' + uint8ToBase64(h2)
 				let body_converted1 = str2Uit8(uint8ToStr(h2))
 				let body_converted2 = base64ToUint8(str_base64)
+				let body_converted3 = base64ToUint8(uint8ToBase64(h2))
 				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer))
+				console.log('[b64-prefix]', str_base64);
 				console.log('[data1]', all_data)
 				console.log('[data2]', all_data_converted )
 				console.log('[body-utf8]', uint8ToStr(h2));
 				console.log('[converted-body1]', body_converted1)
 				console.log('[converted-body2]', body_converted2)
+				console.log('[converted-body3]', body_converted3)
 				data = all_data_converted
 			}
 			this._socket.send(data)
