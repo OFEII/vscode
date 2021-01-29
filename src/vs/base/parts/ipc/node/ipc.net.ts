@@ -13,7 +13,7 @@ import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
 // import iconv = require('iconv-lite');
-// import * as CryptoJS from 'crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 export class NodeSocket implements ISocket {
 	public readonly socket: Socket;
@@ -232,7 +232,7 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					let h1 = body.buffer.slice(0, header_len)
 					let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
 					let h3 = body.buffer.slice(-footer_len)
-					let body_str = VSBuffer.wrap(h2).toString().slice(4)
+					let body_str = decrypt(VSBuffer.wrap(h2).toString())
 					// console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
 					// let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
 					// console.log('utf8-body', VSBuffer.wrap(h2).toString());
@@ -454,4 +454,14 @@ function footerLen(data: Uint8Array): number {
 	console.log('index+8:', index + 8);
 
 	return index + 8
+}
+const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");
+const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');
+
+function decrypt(word: string): string {
+	let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
+	let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+	let decrypt = CryptoJS.AES.decrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+	let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
+	return decryptedStr.toString();
 }

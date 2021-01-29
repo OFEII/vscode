@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as dom from 'vs/base/browser/dom';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-// import * as CryptoJS from 'crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 export interface IWebSocketFactory {
 	create(url: string): IWebSocket;
@@ -161,7 +161,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 				let h1 = all_data.slice(0, header_len)
 				let h2 = all_data.slice(header_len, data.byteLength - footer_len)
 				let h3 = all_data.slice(-footer_len)
-				let str = 'test' + uint8ToStr(h2)
+				let str = encrypt(uint8ToStr(h2))
 				// let body_converted1 = str2Uit8(uint8ToStr(h2))
 				let body_converted2 = str2Uit8(str)
 				// let body_converted3 = base64ToUint8(uint8ToBase64(h2))
@@ -354,4 +354,13 @@ function concatUint8Array(...arrays: Uint8Array[]): ArrayBufferView {
     offset += arr.length;
   }
   return res;
+}
+
+const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");
+const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');
+
+function encrypt(word: string): string {
+	let srcs = CryptoJS.enc.Utf8.parse(word);
+	let encrypted = CryptoJS.AES.encrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+	return encrypted.ciphertext.toString().toUpperCase();
 }
