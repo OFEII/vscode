@@ -459,9 +459,7 @@ const key = CryptoJS.enc.Utf8.parse("1234123412ABCDEF");
 const iv = CryptoJS.enc.Utf8.parse('ABCDEF1234123412');
 
 function decrypt(word: string): string {
-	let encryptedHexStr = CryptoJS.enc.Hex.parse(word);
-	let srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-	let decrypt = CryptoJS.AES.decrypt(srcs, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
-	let decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
-	return decryptedStr.toString();
+  let decData = CryptoJS.enc.Base64.parse(word).toString(CryptoJS.enc.Utf8)
+  let bytes = CryptoJS.AES.decrypt(decData, key, { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(CryptoJS.enc.Utf8)
+  return JSON.parse(bytes)
 }
