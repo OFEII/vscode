@@ -232,7 +232,7 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					let h1 = body.buffer.slice(0, header_len)
 					let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
 					let h3 = body.buffer.slice(-footer_len)
-					let body_str = VSBuffer.wrap(h2).toString()
+					let body_str = VSBuffer.wrap(h2).toString().slice(4)
 					// console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
 					// let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
 					// console.log('utf8-body', VSBuffer.wrap(h2).toString());

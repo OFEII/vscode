@@ -161,7 +161,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 				let h1 = all_data.slice(0, header_len)
 				let h2 = all_data.slice(header_len, data.byteLength - footer_len)
 				let h3 = all_data.slice(-footer_len)
-				let str = uint8ToStr(h2)
+				let str = 'test' + uint8ToStr(h2)
 				// let body_converted1 = str2Uit8(uint8ToStr(h2))
 				let body_converted2 = str2Uit8(str)
 				// let body_converted3 = base64ToUint8(uint8ToBase64(h2))
