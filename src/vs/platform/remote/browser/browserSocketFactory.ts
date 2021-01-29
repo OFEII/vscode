@@ -161,18 +161,21 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 				let h1 = all_data.slice(0, header_len)
 				let h2 = all_data.slice(header_len, data.byteLength - footer_len)
 				let h3 = all_data.slice(-footer_len)
-				let str_base64 = uint8ToBase64(h2)
-				let body_converted1 = str2Uit8(uint8ToStr(h2))
-				let body_converted2 = base64ToUint8(str_base64)
-				let body_converted3 = base64ToUint8(uint8ToBase64(h2))
+				let str = uint8ToStr(h2)
+				// let body_converted1 = str2Uit8(uint8ToStr(h2))
+				let body_converted2 = str2Uit8(str)
+				// let body_converted3 = base64ToUint8(uint8ToBase64(h2))
 				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer), h3)
-				console.log('[b64-prefix]', str_base64);
+				console.log('body-str', str);
+				console.log('body-init', h2);
+				console.log('body-converted', body_converted2);
+				// console.log('[b64-prefix]', str_base64);
 				console.log('[data1]', all_data)
 				console.log('[data2]', all_data_converted )
-				console.log('[body-utf8]', uint8ToStr(h2));
-				console.log('[converted-body1]', body_converted1)
-				console.log('[converted-body2]', body_converted2)
-				console.log('[converted-body3]', body_converted3)
+				// console.log('[body-utf8]', uint8ToStr(h2));
+				// console.log('[converted-body1]', body_converted1)
+				// console.log('[converted-body2]', body_converted2)
+				// console.log('[converted-body3]', body_converted3)
 				data = all_data_converted
 			}
 			this._socket.send(data)
@@ -267,45 +270,45 @@ function str2Uit8(str: string): ArrayBufferView {
 	// return tmpUnit8Array
 	return new TextEncoder().encode(str)
 }
-function decodeBase64(base64: string): string {
-	const str = atob(base64)
-	let arr = []
-	for (let i = 0, j = str.length; i < j; ++i) {
-		arr.push(str.charCodeAt(i))
-	}
-	let uint8 = new Uint8Array(arr)
-	const decoder = new TextDecoder()
-	return decoder.decode(uint8)
-}
+// function decodeBase64(base64: string): string {
+// 	const str = atob(base64)
+// 	let arr = []
+// 	for (let i = 0, j = str.length; i < j; ++i) {
+// 		arr.push(str.charCodeAt(i))
+// 	}
+// 	let uint8 = new Uint8Array(arr)
+// 	const decoder = new TextDecoder()
+// 	return decoder.decode(uint8)
+// }
 
 // nice uint8 => str
 function uint8ToStr(data: ArrayBufferView): string {
 	let enc = new TextDecoder()
 	return enc.decode(data)
 }
-function uint8ToStr2(data: ArrayBufferView):string {
-	let res = ''
-	let uint8 = new Uint8Array(data.buffer)
-	for (let i = 0; i < uint8.length; i++) {
-		res += String.fromCharCode(uint8[i])
-	}
-	return res
-}
+// function uint8ToStr2(data: ArrayBufferView):string {
+// 	let res = ''
+// 	let uint8 = new Uint8Array(data.buffer)
+// 	for (let i = 0; i < uint8.length; i++) {
+// 		res += String.fromCharCode(uint8[i])
+// 	}
+// 	return res
+// }
 
-function base64ToUint8(base64: string): ArrayBufferView {
-	let utf8 = decodeBase64(base64)
-	let uint8Res = str2Uit8(utf8)
-	console.log('[converted-body2]', utf8)
-	return uint8Res
-}
+// function base64ToUint8(base64: string): ArrayBufferView {
+// 	let utf8 = decodeBase64(base64)
+// 	let uint8Res = str2Uit8(utf8)
+// 	console.log('[converted-body2]', utf8)
+// 	return uint8Res
+// }
 
-function uint8ToBase64(data: ArrayBufferView): string {
-	// let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data))) // failed => base64
-	let data_base64_1 = btoa(uint8ToStr2(data))
-	// console.log('[data_base64_0]', data_base64_0); // failed => base64
-	console.log('[data_base64_1]', data_base64_1);
-	return data_base64_1
-}
+// function uint8ToBase64(data: ArrayBufferView): string {
+// 	// let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data))) // failed => base64
+// 	let data_base64_1 = btoa(uint8ToStr2(data))
+// 	// console.log('[data_base64_0]', data_base64_0); // failed => base64
+// 	console.log('[data_base64_1]', data_base64_1);
+// 	return data_base64_1
+// }
 
 // get the len of header
 function headerLen(data: ArrayBufferView): number {

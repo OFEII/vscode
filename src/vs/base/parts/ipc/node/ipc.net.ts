@@ -232,15 +232,21 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					let h1 = body.buffer.slice(0, header_len)
 					let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
 					let h3 = body.buffer.slice(-footer_len)
-					console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
-					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
-					console.log('utf8-body', VSBuffer.wrap(h2).toString());
-					let body_converted = base64ToVsbuff(body_base64)
+					let body_str = VSBuffer.wrap(h2).toString()
+					// console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
+					// let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
+					// console.log('utf8-body', VSBuffer.wrap(h2).toString());
+					let body_converted = str2buff(body_str)
 					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
-					console.log('[splitbody]', VSBuffer.wrap(h2));
-					console.log('[body_base64-splited]', body_base64);
+					console.log('body_str ', body_str );
+					console.log('body-init', VSBuffer.wrap(h2));
 					console.log('body_converted', body_converted);
-					console.log('[all_data_converted]', all_data_converted);
+					console.log('data1', body);
+					console.log('data2', all_data_converted);
+					// console.log('[splitbody]', VSBuffer.wrap(h2));
+					// console.log('[body_base64-splited]', body_base64);
+					// console.log('body_converted', body_converted);
+					// console.log('[all_data_converted]', all_data_converted);
 					body = all_data_converted
 				}
 				this._state.state = ReadState.PeekHeader;
@@ -391,35 +397,36 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 // 	return res
 // }
 
-// function str2buff(str: string): VSBuffer  {
-// 	let arr = []
-// 	for (let i = 0, j = str.length; i < j; ++i) {
-// 		arr.push(str.charCodeAt(i))
-// 	}
-// 	return VSBuffer.wrap(new Uint8Array(arr))
-// }
-
-function base64ToVsbuff(str: string): VSBuffer {
-	return VSBuffer.wrap(Buffer.from(str, 'base64'))
+function str2buff(str: string): VSBuffer  {
+	// let arr = []
+	// for (let i = 0, j = str.length; i < j; ++i) {
+	// 	arr.push(str.charCodeAt(i))
+	// }
+	// return VSBuffer.wrap(new Uint8Array(arr))
+	return VSBuffer.wrap(Buffer.from(str))
 }
+
+// function base64ToVsbuff(str: string): VSBuffer {
+// 	return VSBuffer.wrap(Buffer.from(str, 'base64'))
+// }
 // function base64ToVsbuff2(str: string): VSBuffer {
 // 	let utf8 = Buffer.from(str, 'base64').toString()
 // 	return str2buff(utf8)
 // }
 // VSBUFFER => BASE64
-function vsbuffer2Base64(buff: VSBuffer): string {
-	// const textDecoder = new TextDecoder()
-	// const str1_utf8 = buff.toString()
-	// const str2_utf8 = textDecoder.decode(buff.buffer)
-	// const str1_64_0 = Buffer.from(str1_utf8).toString('base64')
-	// const str1_64_1 = Buffer.from(buff.buffer).toString('base64')
-	// console.log('[str1_utf8]', str1_utf8)
-	// console.log('[str10]', str1_64_0)
-	// console.log('[str11]', str1_64_1)
-	// console.log('[diff-10-11]', str1_64_0 === str1_64_1)
-	return Buffer.from(buff.buffer).toString('base64')
+// function vsbuffer2Base64(buff: VSBuffer): string {
+// 	// const textDecoder = new TextDecoder()
+// 	// const str1_utf8 = buff.toString()
+// 	// const str2_utf8 = textDecoder.decode(buff.buffer)
+// 	// const str1_64_0 = Buffer.from(str1_utf8).toString('base64')
+// 	// const str1_64_1 = Buffer.from(buff.buffer).toString('base64')
+// 	// console.log('[str1_utf8]', str1_utf8)
+// 	// console.log('[str10]', str1_64_0)
+// 	// console.log('[str11]', str1_64_1)
+// 	// console.log('[diff-10-11]', str1_64_0 === str1_64_1)
+// 	return Buffer.from(buff.buffer).toString('base64')
 
-}
+// }
 
 // get the len of header
 function headerLen(data: Uint8Array): number {
