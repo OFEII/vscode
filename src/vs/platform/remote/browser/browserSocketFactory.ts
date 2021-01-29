@@ -268,7 +268,7 @@ function str2Uit8(str: string): ArrayBufferView {
 	return new TextEncoder().encode(str)
 }
 function decodeBase64(base64: string): string {
-	const str = decodeURIComponent(window.atob(base64))
+	const str = atob(base64)
 	let arr = []
 	for (let i = 0, j = str.length; i < j; ++i) {
 		arr.push(str.charCodeAt(i))
@@ -301,7 +301,7 @@ function base64ToUint8(base64: string): ArrayBufferView {
 
 function uint8ToBase64(data: ArrayBufferView): string {
 	// let data_base64_0 = btoa(encodeURIComponent(uint8ToStr(data))) // failed => base64
-	let data_base64_1 = btoa(encodeURIComponent(uint8ToStr2(data)))
+	let data_base64_1 = btoa(uint8ToStr2(data))
 	// console.log('[data_base64_0]', data_base64_0); // failed => base64
 	console.log('[data_base64_1]', data_base64_1);
 	return data_base64_1
