@@ -153,7 +153,7 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			this._socket.send(data);
 		} else {
 			sData = uint8ToStr(data)
-			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 && sData.length <= 1000) {
+			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0) {
 				// let header = data.buffer.slice(0, 88)
 				let header_len = headerLen(data)
 				let footer_len = footerLen(data)
