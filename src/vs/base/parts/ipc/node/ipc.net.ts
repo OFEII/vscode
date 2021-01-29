@@ -226,17 +226,19 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				let str = body.toString()
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0 && str.length <= 1000) {
+					console.log('[body-init]', body);
 					let header_len = headerLen(body.buffer)
 					let h1 = body.buffer.slice(0, header_len)
 					let h2 = body.buffer.slice(header_len)
 					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
 					let body_converted = base64ToVsbuff(body_base64)
 					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted])
-					console.log('[body]', VSBuffer.wrap(h2));
+					console.log('[splitbody]', VSBuffer.wrap(h2));
 					console.log('[body_base64]', body_base64);
 					console.log('body_converted', body_converted);
+
 					console.log('[all_data_converted]', all_data_converted);
-					body = body_converted
+					body = all_data_converted
 				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
@@ -417,12 +419,16 @@ function vsbuffer2Base64(buff: VSBuffer): string {
 }
 
 // get the len of header
-function headerLen(data: ArrayBufferView): number {
-	const uint8 = new Uint8Array(data.buffer)
-	const uint8_31 = uint8.slice(31, 70)
+function headerLen(data: Uint8Array): number {
+	const uint8_31 = data.slice(31, 70)
+	console.log('[uint8]', data);
+	console.log('[uint8_31]', uint8_31);
+
 	let index:number = 0
 	for (let i = 0; i < uint8_31.length; i++) {
-		if (uint8_31[i] === 1) {
+		console.log('[i-i]', i, ':', uint8_31[i]);
+		if (uint8_31[i] === 0x01) {
+			console.log('uint8_31[i]', uint8_31[i]);
 			index = i
 			console.log('[header-i]', index);
 			console.log('[header-len]', 85 + index);
