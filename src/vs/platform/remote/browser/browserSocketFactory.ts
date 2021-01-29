@@ -156,14 +156,16 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0 && sData.length <= 1000) {
 				// let header = data.buffer.slice(0, 88)
 				let header_len = headerLen(data)
+				let footer_len = footerLen(data)
 				let all_data = new Uint8Array(data.buffer)
 				let h1 = all_data.slice(0, header_len)
-				let h2 = all_data.slice(header_len)
-				let str_base64 = 'test' + uint8ToBase64(h2)
+				let h2 = all_data.slice(header_len, data.byteLength - footer_len)
+				let h3 = all_data.slice(-footer_len)
+				let str_base64 = uint8ToBase64(h2)
 				let body_converted1 = str2Uit8(uint8ToStr(h2))
 				let body_converted2 = base64ToUint8(str_base64)
 				let body_converted3 = base64ToUint8(uint8ToBase64(h2))
-				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer))
+				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer), h3)
 				console.log('[b64-prefix]', str_base64);
 				console.log('[data1]', all_data)
 				console.log('[data2]', all_data_converted )
@@ -319,6 +321,21 @@ function headerLen(data: ArrayBufferView): number {
 		}
 	}
 	return index + 85
+}
+
+// get the len of footer
+function footerLen(data: ArrayBufferView): number {
+	const uint8 = new Uint8Array(data.buffer)
+	const uint8_31 = uint8.slice(-12)
+	let index:number = 0
+	for (let i = uint8_31.length-1; i > 0; i--) {
+		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
+			break
+		} else{
+			index++
+		}
+	}
+	return index + 8
 }
 
 // concat 2+ uint8Array

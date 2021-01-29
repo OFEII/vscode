@@ -228,12 +228,15 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0 && str.length > 0 && str.length <= 1000) {
 					console.log('[body-init]', body);
 					let header_len = headerLen(body.buffer)
+					let footer_len = footerLen(body.buffer)
 					let h1 = body.buffer.slice(0, header_len)
-					let h2 = body.buffer.slice(header_len)
+					let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
+					let h3 = body.buffer.slice(-footer_len)
 					console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
-					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2)).slice(4)
+					let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
+					console.log('utf8-body', VSBuffer.wrap(h2).toString());
 					let body_converted = base64ToVsbuff(body_base64)
-					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted])
+					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
 					console.log('[splitbody]', VSBuffer.wrap(h2));
 					console.log('[body_base64-splited]', body_base64);
 					console.log('body_converted', body_converted);
@@ -421,19 +424,27 @@ function vsbuffer2Base64(buff: VSBuffer): string {
 // get the len of header
 function headerLen(data: Uint8Array): number {
 	const uint8_31 = data.slice(31, 70)
-	console.log('[uint8]', data);
-	console.log('[uint8_31]', uint8_31);
-
 	let index:number = 0
 	for (let i = 0; i < uint8_31.length; i++) {
-		console.log('[i-i]', i, ':', uint8_31[i]);
 		if (uint8_31[i] === 0x01) {
-			console.log('uint8_31[i]', uint8_31[i]);
 			index = i
-			console.log('[header-i]', index);
-			console.log('[header-len]', 85 + index);
 			break
 		}
 	}
 	return index + 85
+}
+// get the len of footer
+function footerLen(data: Uint8Array): number {
+	const uint8_31 = data.slice(-12)
+	let index:number = 0
+	for (let i = uint8_31.length-1; i > 0; i--) {
+		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
+			break
+		} else{
+			index++
+		}
+	}
+	console.log('index+8:', index + 8);
+
+	return index + 8
 }
