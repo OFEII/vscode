@@ -166,9 +166,9 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 				let body_converted2 = str2Uit8(str)
 				// let body_converted3 = base64ToUint8(uint8ToBase64(h2))
 				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer), h3)
-				console.log('body-str', str);
-				console.log('body-init', h2);
-				console.log('body-converted', body_converted2);
+				// console.log('body-str', str);
+				// console.log('body-init', h2);
+				// console.log('body-converted', body_converted2);
 				// console.log('[b64-prefix]', str_base64);
 				console.log('[data1]', all_data)
 				console.log('[data2]', all_data_converted )
@@ -318,8 +318,6 @@ function headerLen(data: ArrayBufferView): number {
 	for (let i = 0; i < uint8_31.length; i++) {
 		if (uint8_31[i] === 1) {
 			index = i
-			console.log('[header-i]', index);
-			console.log('[header-len]', 85 + index);
 			break
 		}
 	}
@@ -329,15 +327,17 @@ function headerLen(data: ArrayBufferView): number {
 // get the len of footer
 function footerLen(data: ArrayBufferView): number {
 	const uint8 = new Uint8Array(data.buffer)
-	const uint8_31 = uint8.slice(-12)
+	const uint8_31 = uint8.slice(-30)
 	let index:number = 0
 	for (let i = uint8_31.length-1; i > 0; i--) {
 		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
+			console.log('is break');
 			break
 		} else{
 			index++
 		}
 	}
+	console.log('[uint8_31-buff]', uint8_31);
 	console.log('[footer-index]', index);
 	console.log('[footer-index + 8)]', index + 8);
 	return index + 8

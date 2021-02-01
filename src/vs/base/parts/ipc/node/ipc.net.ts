@@ -226,7 +226,8 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				let str = body.toString()
 				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0) {
-					console.log('[body-init]', body);
+					console.log('data1', body);
+					console.log('data1-str', str);
 					let header_len = headerLen(body.buffer)
 					let footer_len = footerLen(body.buffer)
 					let h1 = body.buffer.slice(0, header_len)
@@ -238,10 +239,6 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 					// console.log('utf8-body', VSBuffer.wrap(h2).toString());
 					let body_converted = str2buff(body_str)
 					let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
-					console.log('body_str ', body_str );
-					console.log('body-init', VSBuffer.wrap(h2));
-					console.log('body_converted', body_converted);
-					console.log('data1', body);
 					console.log('data2', all_data_converted);
 					// console.log('[splitbody]', VSBuffer.wrap(h2));
 					// console.log('[body_base64-splited]', body_base64);
@@ -443,15 +440,18 @@ function headerLen(data: Uint8Array): number {
 }
 // get the len of footer
 function footerLen(data: Uint8Array): number {
-	const uint8_31 = data.slice(-13)
+	const uint8_31 = data.slice(-30)
 	let index:number = 0
 	for (let i = uint8_31.length-1; i > 0; i--) {
 		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
+			console.log('isbreak');
 			break
 		} else{
 			index++
 		}
 	}
+	console.log('[uint8_31-buff]', uint8_31);
+	console.log('uint8_31', VSBuffer.wrap(uint8_31).toString());
 	console.log('index+8:', index + 8);
 
 	return index + 8
