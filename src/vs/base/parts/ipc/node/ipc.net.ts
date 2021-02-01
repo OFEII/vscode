@@ -159,7 +159,32 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 		if (data.byteLength === 0) {
 			return;
 		}
-
+		console.log('==============================================');
+		let str = data.toString()
+		if (str.indexOf('remotefilesystem') >=0 && str.indexOf('write')) {
+			// console.log('data1', body);
+			// console.log('data1-str', str);
+			// let header_len = headerLen(body.buffer)
+			// let footer_len = footerLen(body.buffer)
+			// let h1 = body.buffer.slice(0, header_len)
+			// let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
+			// let h3 = body.buffer.slice(-footer_len)
+			// let body_str = VSBuffer.wrap(h2).toString()
+			// // console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
+			// // let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
+			// // console.log('utf8-body', VSBuffer.wrap(h2).toString());
+			// let body_converted = str2buff(body_str)
+			// let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
+			// console.log('data2', all_data_converted);
+			// console.log('[splitbody]', VSBuffer.wrap(h2));
+			// console.log('[body_base64-splited]', body_base64);
+			// console.log('body_converted', body_converted);
+			// console.log('[all_data_converted]', all_data_converted);
+			console.log('[data-stat100]:',(VSBuffer.wrap(data.buffer.slice(0, 100))).toString());
+			console.log('[data-len]:', data.byteLength);
+			console.log('[data-last100]:',(VSBuffer.wrap(data.buffer.slice(-100))).toString());
+		}
+		console.log('##################################################');
 		this._incomingData.acceptChunk(data);
 
 		while (this._incomingData.byteLength >= this._state.readLen) {
@@ -224,33 +249,6 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				unmask(body, this._state.mask);
 
-				let str = body.toString()
-				if (str.indexOf('remotefilesystem') >=0) {
-					console.log('==============================================');
-					// console.log('data1', body);
-					// console.log('data1-str', str);
-					// let header_len = headerLen(body.buffer)
-					// let footer_len = footerLen(body.buffer)
-					// let h1 = body.buffer.slice(0, header_len)
-					// let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
-					// let h3 = body.buffer.slice(-footer_len)
-					// let body_str = VSBuffer.wrap(h2).toString()
-					// // console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
-					// // let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
-					// // console.log('utf8-body', VSBuffer.wrap(h2).toString());
-					// let body_converted = str2buff(body_str)
-					// let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
-					// console.log('data2', all_data_converted);
-					// console.log('[splitbody]', VSBuffer.wrap(h2));
-					// console.log('[body_base64-splited]', body_base64);
-					// console.log('body_converted', body_converted);
-					// console.log('[all_data_converted]', all_data_converted);
-					console.log('[data-stat100]:',(VSBuffer.wrap(body.buffer.slice(0, 100))).toString());
-					console.log('[data-len]:', body.byteLength);
-					console.log('[data-last100]:',(VSBuffer.wrap(body.buffer.slice(-100))).toString());
-					console.log('##################################################');
-					body = body
-				}
 				this._state.state = ReadState.PeekHeader;
 				this._state.readLen = Constants.MinHeaderByteSize;
 				this._state.mask = 0;
