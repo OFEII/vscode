@@ -438,11 +438,12 @@ function headerLen(data: Uint8Array): number {
 			break
 		}
 	}
+	console.log('footer-index+85:', index + 85);
 	return index + 85
 }
 // get the len of footer
 function footerLen(data: Uint8Array): number {
-	const uint8_31 = data.slice(-12)
+	const uint8_31 = data.slice(-13)
 	let index:number = 0
 	for (let i = uint8_31.length-1; i > 0; i--) {
 		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {

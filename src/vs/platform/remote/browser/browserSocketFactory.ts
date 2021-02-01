@@ -338,6 +338,8 @@ function footerLen(data: ArrayBufferView): number {
 			index++
 		}
 	}
+	console.log('[footer-index]', index);
+	console.log('[footer-index + 8)]', index + 8);
 	return index + 8
 }
 
