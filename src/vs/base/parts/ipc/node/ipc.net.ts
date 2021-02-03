@@ -161,7 +161,9 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 		}
 		console.log('==============================================');
 		let str = data.toString()
-		if (str.indexOf('remotefilesystem') >=0 && str.indexOf('write')) {
+		console.log('[str]:', str);
+		console.log('[len]:', data.byteLength);
+		// if (str.indexOf('remotefilesystem') >=0 && str.indexOf('write')) {
 			// console.log('data1', body);
 			// console.log('data1-str', str);
 			// let header_len = headerLen(body.buffer)
@@ -180,10 +182,10 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 			// console.log('[body_base64-splited]', body_base64);
 			// console.log('body_converted', body_converted);
 			// console.log('[all_data_converted]', all_data_converted);
-			console.log('[data-stat100]:',(VSBuffer.wrap(data.buffer.slice(0, 100))).toString());
-			console.log('[data-len]:', data.byteLength);
-			console.log('[data-last100]:',(VSBuffer.wrap(data.buffer.slice(-100))).toString());
-		}
+			// console.log('[data-stat100]:',(VSBuffer.wrap(data.buffer.slice(0, 100))).toString());
+			// console.log('[data-len]:', data.byteLength);
+			// console.log('[data-last100]:',(VSBuffer.wrap(data.buffer.slice(-100))).toString());
+		// }
 		console.log('##################################################');
 		this._incomingData.acceptChunk(data);
 
