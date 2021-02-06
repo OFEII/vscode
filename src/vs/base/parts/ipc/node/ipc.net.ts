@@ -13,7 +13,7 @@ import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { ISocket, Protocol, Client, ChunkStream } from 'vs/base/parts/ipc/common/ipc.net';
 // import iconv = require('iconv-lite');
-// import * as CryptoJS from 'crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 export class NodeSocket implements ISocket {
 	public readonly socket: Socket;
@@ -159,36 +159,10 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 		if (data.byteLength === 0) {
 			return;
 		}
-		console.log('==============================================');
-		let str = data.toString()
-		console.log('[str]:', str);
-		console.log('[len]:', data.byteLength);
-		// if (str.indexOf('remotefilesystem') >=0 && str.indexOf('write')) {
-			// console.log('data1', body);
-			// console.log('data1-str', str);
-			// let header_len = headerLen(body.buffer)
-			// let footer_len = footerLen(body.buffer)
-			// let h1 = body.buffer.slice(0, header_len)
-			// let h2 = body.buffer.slice(header_len, body.byteLength - footer_len)
-			// let h3 = body.buffer.slice(-footer_len)
-			// let body_str = VSBuffer.wrap(h2).toString()
-			// // console.log('[body_base64]', vsbuffer2Base64(VSBuffer.wrap(h2)));
-			// // let body_base64 = vsbuffer2Base64(VSBuffer.wrap(h2))
-			// // console.log('utf8-body', VSBuffer.wrap(h2).toString());
-			// let body_converted = str2buff(body_str)
-			// let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
-			// console.log('data2', all_data_converted);
-			// console.log('[splitbody]', VSBuffer.wrap(h2));
-			// console.log('[body_base64-splited]', body_base64);
-			// console.log('body_converted', body_converted);
-			// console.log('[all_data_converted]', all_data_converted);
-			// console.log('[data-stat100]:',(VSBuffer.wrap(data.buffer.slice(0, 100))).toString());
-			// console.log('[data-len]:', data.byteLength);
-			// console.log('[data-last100]:',(VSBuffer.wrap(data.buffer.slice(-100))).toString());
-		// }
-		console.log('##################################################');
-		this._incomingData.acceptChunk(data);
 
+		this._incomingData.acceptChunk(data);
+		let t:VSBuffer = VSBuffer.fromString('')
+		let chunkCnt:number = 0
 		while (this._incomingData.byteLength >= this._state.readLen) {
 
 			if (this._state.state === ReadState.PeekHeader) {
@@ -251,11 +225,33 @@ export class WebSocketNodeSocket extends Disposable implements ISocket {
 
 				unmask(body, this._state.mask);
 
-				this._state.state = ReadState.PeekHeader;
-				this._state.readLen = Constants.MinHeaderByteSize;
-				this._state.mask = 0;
-
-				this._onData.fire(body);
+				let str = body.toString()
+				if (str.indexOf('write') >=0 && str.indexOf('remotefilesystem') >=0) {
+					let header_len = headerLen(body.buffer)
+					let footer_len = footerLen(body.buffer)
+					let h1 = body.buffer.slice(0, header_len)
+					if (footer_len > 30) {
+						t = VSBuffer.concat([t, body])
+						chunkCnt++
+						this._state.state = ReadState.PeekHeader;
+						this._state.readLen = Constants.MinHeaderByteSize;
+						this._state.mask = 0;
+					} else {
+						t = chunkCnt === 0 ? body : t
+						let h2 = t.buffer.slice(header_len, body.byteLength - footer_len)
+						let h3 = t.buffer.slice(-footer_len)
+						let body_str = decrypt(VSBuffer.wrap(h2).toString());
+						let body_converted = str2buff(body_str)
+						let all_data_converted = VSBuffer.concat([VSBuffer.wrap(h1), body_converted, VSBuffer.wrap(h3)])
+						body = all_data_converted
+						this._state.state = ReadState.PeekHeader;
+						this._state.readLen = Constants.MinHeaderByteSize;
+						this._state.mask = 0;
+						chunkCnt=0
+						t=VSBuffer.fromString('')
+						this._onData.fire(body);
+					}
+				}
 			}
 		}
 	}
@@ -350,121 +346,41 @@ export function connect(hook: any, clientId: string): Promise<Client> {
 		socket.once('error', e);
 	});
 }
-// const key = '1234567890123456'
-// const iv = '1234567890123456'
 
-// function _decryptNode(data: string):string {
-// 	console.log('[node-data-string]', data)
-// 	const encryptedHexStr = CryptoJS.enc.Hex.parse(data);
-// 	const srcs = CryptoJS.enc.Base64.stringify(encryptedHexStr);
-// 	const decrypted = CryptoJS.AES.decrypt(srcs, CryptoJS.enc.Utf8.parse(key), {
-// 		iv: CryptoJS.enc.Utf8.parse(iv),
-// 		mode: CryptoJS.mode.CBC,
-// 		padding: CryptoJS.pad.Pkcs7
-// 	})
-// 	console.log('[node-data-decrypto]', decrypted.toString(CryptoJS.enc.Base64))
-// 	return decrypted.toString(CryptoJS.enc.Base64);
-// }
-// function (buff: Buffer): Buffer{
-// 	console.log('[ns-ondata-buff]', buff.buffer);
-// 	console.log('[ns-ondata.64]', buff.toString('base64'));
-// 	return buff
-// }
-
-// function buff2Str(buff:Buffer): string {
-// 	let str = buff.toString()
-// 	let res = str.substr(6)
-// 	return res
-// }
-
-// function str2Buff(str: string): Buffer {
-// 	return Buffer.from(str)
-// }
-
-// function buff2str1(buff: VSBuffer): string {
-// 	let enc = new TextDecoder('utf-8')
-// 	return enc.decode(buff.buffer)
-// }
-
-// function str2buff1(str: string): VSBuffer  {
-	// const textEncoder = new TextEncoder('base64');
-	// return VSBuffer.wrap(textEncoder.encode(str));
-// }
-// function buff2str2(buff: VSBuffer): string {
-// 	let res = ''
-// 	let uint8 = new Uint8Array(buff.buffer)
-// 	for (let i = 0; i < uint8.length; i++) {
-// 		res += String.fromCharCode(uint8[i])
-// 	}
-// 	return res
-// }
-
-// function str2buff(str: string): VSBuffer  {
-// 	// let arr = []
-// 	// for (let i = 0, j = str.length; i < j; ++i) {
-// 	// 	arr.push(str.charCodeAt(i))
-// 	// }
-// 	// return VSBuffer.wrap(new Uint8Array(arr))
-// 	return VSBuffer.wrap(Buffer.from(str))
-// }
-
-// function base64ToVsbuff(str: string): VSBuffer {
-// 	return VSBuffer.wrap(Buffer.from(str, 'base64'))
-// }
-// function base64ToVsbuff2(str: string): VSBuffer {
-// 	let utf8 = Buffer.from(str, 'base64').toString()
-// 	return str2buff(utf8)
-// }
-// VSBUFFER => BASE64
-// function vsbuffer2Base64(buff: VSBuffer): string {
-// 	// const textDecoder = new TextDecoder()
-// 	// const str1_utf8 = buff.toString()
-// 	// const str2_utf8 = textDecoder.decode(buff.buffer)
-// 	// const str1_64_0 = Buffer.from(str1_utf8).toString('base64')
-// 	// const str1_64_1 = Buffer.from(buff.buffer).toString('base64')
-// 	// console.log('[str1_utf8]', str1_utf8)
-// 	// console.log('[str10]', str1_64_0)
-// 	// console.log('[str11]', str1_64_1)
-// 	// console.log('[diff-10-11]', str1_64_0 === str1_64_1)
-// 	return Buffer.from(buff.buffer).toString('base64')
-
-// }
+// str =》 vsbuff
+function str2buff(str: string): VSBuffer  {
+	return VSBuffer.wrap(Buffer.from(str))
+}
 
 // get the len of header
-// function headerLen(data: Uint8Array): number {
-// 	const uint8_31 = data.slice(31, 70)
-// 	let index:number = 0
-// 	for (let i = 0; i < uint8_31.length; i++) {
-// 		if (uint8_31[i] === 0x01) {
-// 			index = i
-// 			break
-// 		}
-// 	}
-// 	console.log('footer-index+85:', index + 85);
-// 	return index + 85
-// }
+function headerLen(data: Uint8Array): number {
+	const uint8_31 = data.slice(31, 70)
+	let index:number = 0
+	for (let i = 0; i < uint8_31.length; i++) {
+		if (uint8_31[i] === 0x01) {
+			index = i
+			break
+		}
+	}
+	return index + 85
+}
 // get the len of footer
-// function footerLen(data: Uint8Array): number {
-// 	const uint8_31 = data.slice(-30)
-// 	let index:number = 0
-// 	for (let i = uint8_31.length-1; i > 0; i--) {
-// 		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
-// 			console.log('isbreak');
-// 			break
-// 		} else{
-// 			index++
-// 		}
-// 	}
-// 	console.log('[uint8_31-buff]', uint8_31);
-// 	console.log('uint8_31', VSBuffer.wrap(uint8_31).toString());
-// 	console.log('index+8:', index + 8);
-
-// 	return index + 8
-// }
-// const key = '1234123412ABCDEF';
-
-// function decrypt(word: string): string {
-//   let decData = CryptoJS.enc.Base64.parse(word).toString(CryptoJS.enc.Utf8)
-//   let bytes = CryptoJS.AES.decrypt(decData, key).toString(CryptoJS.enc.Utf8)
-//   return JSON.parse(bytes)
-// }
+function footerLen(data: Uint8Array): number {
+	const uint8_31 = data.slice(-30)
+	let index:number = 0
+	for (let i = uint8_31.length-1; i > 0; i--) {
+		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
+			break
+		} else{
+			index++
+		}
+	}
+	return index + 8
+}
+// node-decrypt
+const key = '1234123412ABCDEF';
+function decrypt(word: string): string {
+  let decData = CryptoJS.enc.Base64.parse(word).toString(CryptoJS.enc.Utf8)
+  let bytes = CryptoJS.AES.decrypt(decData, key).toString(CryptoJS.enc.Utf8)
+  return JSON.parse(bytes)
+}

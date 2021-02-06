@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as dom from 'vs/base/browser/dom';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { RemoteAuthorityResolverError, RemoteAuthorityResolverErrorCode } from 'vs/platform/remote/common/remoteAuthorityResolver';
-// import * as CryptoJS from 'crypto-js'
+import * as CryptoJS from 'crypto-js'
 
 export interface IWebSocketFactory {
 	create(url: string): IWebSocket;
@@ -155,34 +155,28 @@ class BrowserWebSocket extends Disposable implements IWebSocket {
 			sData = uint8ToStr(data)
 			if (sData.indexOf('write') >=0 && sData.indexOf('remotefilesystem') >=0) {
 				// let header = data.buffer.slice(0, 88)
-				console.log('==============================================');
-				// let header_len = headerLen(data)
-				// let footer_len = footerLen(data)
+				let header_len = headerLen(data)
+				let footer_len = footerLen(data)
 				let all_data = new Uint8Array(data.buffer)
-				// let h1 = all_data.slice(0, header_len)
-				// let h2 = all_data.slice(header_len, data.byteLength - footer_len)
-				// let h3 = all_data.slice(-footer_len)
-				// let str = uint8ToStr(h2)
+				let h1 = all_data.slice(0, header_len)
+				let h2 = all_data.slice(header_len, data.byteLength - footer_len)
+				let h3 = all_data.slice(-footer_len)
+				let str = encrypt(uint8ToStr(h2))
 				// let body_converted1 = str2Uit8(uint8ToStr(h2))
-				// let body_converted2 = str2Uit8(str)
+				let body_converted2 = str2Uit8(str)
 				// let body_converted3 = base64ToUint8(uint8ToBase64(h2))
-				// let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer), h3)
-				// console.log('body-str', str);
-				// console.log('body-init', h2);
-				// console.log('body-converted', body_converted2);
+				let all_data_converted = concatUint8Array(h1, new Uint8Array(body_converted2.buffer), h3)
+				console.log('body-str', str);
+				console.log('body-init', h2);
+				console.log('body-converted', body_converted2);
 				// console.log('[b64-prefix]', str_base64);
-				// console.log('body-str', uint8ToStr(h2));
-				// console.log('[data1]', all_data)
-				// console.log('[data2]', all_data_converted )
+				console.log('[data1]', all_data)
+				console.log('[data2]', all_data_converted )
 				// console.log('[body-utf8]', uint8ToStr(h2));
 				// console.log('[converted-body1]', body_converted1)
 				// console.log('[converted-body2]', body_converted2)
 				// console.log('[converted-body3]', body_converted3)
-				console.log('[data-stat100]:',uint8ToStr(all_data.slice(0, 100)));
-				console.log('[data-len]:', data.byteLength);
-				console.log('[data-last100]:',uint8ToStr(all_data.slice(-100)));
-				console.log('##################################################');
-				data = data
+				data = all_data_converted
 			}
 			this._socket.send(data)
 		}
@@ -267,15 +261,15 @@ export class BrowserSocketFactory implements ISocketFactory {
 // 	return encrypted.ciphertext.toString();
 // }
 
-// function str2Uit8(str: string): ArrayBufferView {
-// 	// let arr = []
-// 	// for (let i = 0, j = str.length; i < j; ++i) {
-// 	// 	arr.push(str.charCodeAt(i))
-// 	// }
-// 	// let tmpUnit8Array = new Uint8Array(arr)
-// 	// return tmpUnit8Array
-// 	return new TextEncoder().encode(str)
-// }
+function str2Uit8(str: string): ArrayBufferView {
+	// let arr = []
+	// for (let i = 0, j = str.length; i < j; ++i) {
+	// 	arr.push(str.charCodeAt(i))
+	// }
+	// let tmpUnit8Array = new Uint8Array(arr)
+	// return tmpUnit8Array
+	return new TextEncoder().encode(str)
+}
 // function decodeBase64(base64: string): string {
 // 	const str = atob(base64)
 // 	let arr = []
@@ -317,57 +311,55 @@ function uint8ToStr(data: ArrayBufferView): string {
 // }
 
 // get the len of header
-// function headerLen(data: ArrayBufferView): number {
-// 	const uint8 = new Uint8Array(data.buffer)
-// 	const uint8_31 = uint8.slice(31, 70)
-// 	let index:number = 0
-// 	for (let i = 0; i < uint8_31.length; i++) {
-// 		if (uint8_31[i] === 1) {
-// 			index = i
-// 			break
-// 		}
-// 	}
-// 	return index + 85
-// }
+function headerLen(data: ArrayBufferView): number {
+	const uint8 = new Uint8Array(data.buffer)
+	const uint8_31 = uint8.slice(31, 70)
+	let index:number = 0
+	for (let i = 0; i < uint8_31.length; i++) {
+		if (uint8_31[i] === 1) {
+			index = i
+			console.log('[header-i]', index);
+			console.log('[header-len]', 85 + index);
+			break
+		}
+	}
+	return index + 85
+}
 
-// // get the len of footer
-// function footerLen(data: ArrayBufferView): number {
-// 	const uint8 = new Uint8Array(data.buffer)
-// 	const uint8_31 = uint8.slice(-30)
-// 	let index:number = 0
-// 	for (let i = uint8_31.length-1; i > 0; i--) {
-// 		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
-// 			console.log('is break');
-// 			break
-// 		} else{
-// 			index++
-// 		}
-// 	}
-// 	console.log('[uint8_31-buff]', uint8_31);
-// 	console.log('[footer-index]', index);
-// 	console.log('[footer-index + 8)]', index + 8);
-// 	return index + 8
-// }
+// get the len of footer
+function footerLen(data: ArrayBufferView): number {
+	const uint8 = new Uint8Array(data.buffer)
+	const uint8_31 = uint8.slice(-12)
+	let index:number = 0
+	for (let i = uint8_31.length-1; i > 0; i--) {
+		if (uint8_31[i] === 0 && uint8_31[i-1] === 5) {
+			break
+		} else{
+			index++
+		}
+	}
+	return index + 8
+}
 
-// // concat 2+ uint8Array
-// function concatUint8Array(...arrays: Uint8Array[]): ArrayBufferView {
-//   let length = 0;
-//   for (let arr of arrays) {
-//     length += arr.length;
-//   }
-//   let res = new Uint8Array(length);
-//   let offset = 0;
-//   for (let arr of arrays) {
-//     res.set(arr, offset);
-//     offset += arr.length;
-//   }
-//   return res;
-// }
+// concat 2+ uint8Array
+function concatUint8Array(...arrays: Uint8Array[]): ArrayBufferView {
+  let length = 0;
+  for (let arr of arrays) {
+    length += arr.length;
+  }
+  let res = new Uint8Array(length);
+  let offset = 0;
+  for (let arr of arrays) {
+    res.set(arr, offset);
+    offset += arr.length;
+  }
+  return res;
+}
 
-// const key = '1234123412ABCDEF';
+const key = '1234123412ABCDEF';
 
-// function encrypt(word: string): string {
-//   let encJson = CryptoJS.AES.encrypt(JSON.stringify(word), key).toString()
-//   let encData = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(encJson))
-//   return encData
-// }
+function encrypt(word: string): string {
+  let encJson = CryptoJS.AES.encrypt(JSON.stringify(word), key).toString()
+  let encData = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(encJson))
+  return encData
+}
